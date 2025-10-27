@@ -27,3 +27,8 @@ func (a *app) notFoundResponse(w http.ResponseWriter, r *http.Request) {
 	message := "the requested resource could not be found"
 	a.errorResponseJSON(w, r, http.StatusNotFound, message)
 }
+
+func (a *app) rateLimitExceededResponse(w http.ResponseWriter, r *http.Request) {
+	message := "rate limit exceeded"
+	a.errorResponseJSON(w, r, http.StatusTooManyRequests, message)
+}

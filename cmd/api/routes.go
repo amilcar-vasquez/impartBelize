@@ -19,5 +19,10 @@ func (a *app) routes() http.Handler {
 	// Define API routes
 	router.HandlerFunc(http.MethodGet, apiV1Route+"/healthcheck", a.healthCheckHandler)
 
-	return router
+	// Apply middleware
+	handler := a.recoverPanic(router)
+	handler = a.enableCORS(handler)
+	handler = a.rateLimit(handler)
+
+	return handler
 }
