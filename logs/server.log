@@ -1,0 +1,12 @@
+time=2025-10-27T10:48:23.548-06:00 level=ERROR msg="sql: unknown driver \"postgres\" (forgotten import?)"
+time=2025-10-27T10:49:43.185-06:00 level=ERROR msg="sql: unknown driver \"postgres\" (forgotten import?)"
+time=2025-10-27T10:50:37.385-06:00 level=ERROR msg="sql: unknown driver \"postgres\" (forgotten import?)"
+time=2025-10-27T10:51:33.347-06:00 level=ERROR msg="sql: unknown driver \"postgres\" (forgotten import?)"
+time=2025-10-27T10:53:56.014-06:00 level=INFO msg="Starting server" address=:4000 env=development
+time=2025-10-27T10:54:18.231-06:00 level=INFO msg="Shutting down server" signal=interrupt
+time=2025-10-27T10:54:18.232-06:00 level=INFO msg="Completing background tasks" address=:4000
+time=2025-10-27T10:54:18.232-06:00 level=INFO msg="Server stopped" addr=:4000
+time=2025-10-27T10:54:40.245-06:00 level=INFO msg="Starting server" address=:4000 env=development
+time=2025-10-27T11:07:56.211-06:00 level=INFO msg="Shutting down server" signal=interrupt
+time=2025-10-27T11:07:56.211-06:00 level=INFO msg="Completing background tasks" address=:4000
+time=2025-10-27T11:07:56.211-06:00 level=INFO msg="Server stopped" addr=:4000

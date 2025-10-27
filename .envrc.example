@@ -1,0 +1,5 @@
+export DB_DSN=postgres://username:password@localhost/dbname?sslmode=disable
+export SMTP_HOST=sandbox.smtp.mailtrap.io
+export SMTP_USERNAME=your_smtp_username
+export SMTP_PASSWORD=your_smtp_password
+export SMTP_SENDER="Example Sender <no-reply@sandbox.smtp.mailtrap.io>"
