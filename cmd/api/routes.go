@@ -6,12 +6,18 @@ import (
 	"github.com/julienschmidt/httprouter"
 )
 
-func (app *app) routes() http.Handler {
-	// Initialize a new httprouter instance
+func (a *app) routes() http.Handler {
+
+	const apiV1Route = "/v1"
+	
+	// Initialize the router
 	router := httprouter.New()
 	
 	// handle 404 
-	// in errors.go
-	router.NotFound = http.HandlerFunc(app.notFoundResponse)
+	router.NotFound = http.HandlerFunc(a.notFoundResponse)
+
+	// Define API routes
+	router.HandlerFunc(http.MethodGet, apiV1Route+"/healthcheck", a.healthCheckHandler)
+
 	return router
 }

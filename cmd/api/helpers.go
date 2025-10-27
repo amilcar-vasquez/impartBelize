@@ -7,6 +7,7 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"os"
 	"strconv"
 	"strings"
 
@@ -18,7 +19,7 @@ import (
 type envelope map[string]any
 
 
-func (app *app) writeJSON(w http.ResponseWriter, status int, data envelope, headers http.Header) error {
+func (app *app) writeJSON(w http.ResponseWriter, status int, data any, headers http.Header) error {
 	jsResponse, err := json.MarshalIndent(data, "", "\t")
     if err != nil {
         return err
@@ -171,4 +172,14 @@ func (a *app) background(fn func()) {
         }()
        fn()     // Run the actual function
    }()
+}
+
+// getEnvAsInt reads an environment variable and converts it to int, returns defaultVal if not set or invalid
+func getEnvAsInt(key string, defaultVal int) int {
+	if val := os.Getenv(key); val != "" {
+		if intVal, err := strconv.Atoi(val); err == nil {
+			return intVal
+		}
+	}
+	return defaultVal
 }

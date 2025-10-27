@@ -10,7 +10,6 @@ import (
 	"os"
 	"path/filepath"
 	"runtime"
-	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -26,22 +25,12 @@ var smtpHost = os.Getenv("SMTP_HOST")
 var smtpUsername = os.Getenv("SMTP_USERNAME")
 var smtpPassword = os.Getenv("SMTP_PASSWORD")
 var smtpSender = os.Getenv("SMTP_SENDER")
-
-// getEnvAsInt reads an environment variable and converts it to int, returns defaultVal if not set or invalid
-func getEnvAsInt(key string, defaultVal int) int {
-	if val := os.Getenv(key); val != "" {
-		if intVal, err := strconv.Atoi(val); err == nil {
-			return intVal
-		}
-	}
-	return defaultVal
-}
-
 var smtpPort = getEnvAsInt("SMTP_PORT", 0)
 
 type configuration struct {
 	port int
 	env  string
+	version string
 	db   struct {
 		dsn string
 	}
@@ -73,6 +62,8 @@ type app struct {
 // loads the application configuration from terminal flags or defaults in the env. 
 func loadConfig() configuration {
 	var cfg configuration
+
+	cfg.version = version
 
 	// Server settings
 	flag.IntVar(&cfg.port, "port", 4000, "API server port")
