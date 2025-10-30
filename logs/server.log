@@ -14,3 +14,7 @@ time=2025-10-27T11:33:00.438-06:00 level=INFO msg="Starting server" address=:400
 time=2025-10-27T11:34:50.814-06:00 level=INFO msg="Shutting down server" signal=interrupt
 time=2025-10-27T11:34:50.814-06:00 level=INFO msg="Completing background tasks" address=:4000
 time=2025-10-27T11:34:50.814-06:00 level=INFO msg="Server stopped" addr=:4000
+time=2025-10-29T20:46:25.324-06:00 level=INFO msg="Starting server" address=:4000 env=development
+time=2025-10-29T20:46:31.824-06:00 level=INFO msg="Shutting down server" signal=interrupt
+time=2025-10-29T20:46:31.824-06:00 level=INFO msg="Completing background tasks" address=:4000
+time=2025-10-29T20:46:31.824-06:00 level=INFO msg="Server stopped" addr=:4000
