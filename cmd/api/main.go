@@ -15,51 +15,53 @@ import (
 	"time"
 
 	_ "github.com/lib/pq" // PostgreSQL driver
-)
+	"github.com/amilcar-vasquez/impartBelize/internal/data"
+	"github.com/amilcar-vasquez/impartBelize/internal/mailer"
 
+)
 
 const version = "1.0.0"
 
 var dbDSN = os.Getenv("DB_DSN")
 var smtpHost = os.Getenv("SMTP_HOST")
+var smtpPort = 587 // default SMTP port
 var smtpUsername = os.Getenv("SMTP_USERNAME")
 var smtpPassword = os.Getenv("SMTP_PASSWORD")
 var smtpSender = os.Getenv("SMTP_SENDER")
-var smtpPort = getEnvAsInt("SMTP_PORT", 0)
 
 type configuration struct {
-	port int
-	env  string
+	port    int
+	env     string
 	version string
-	db   struct {
+	db      struct {
 		dsn string
 	}
 	cors struct {
 		trustedOrigins []string
 	}
 	limiter struct {
-		rps float64
-		burst int
+		rps     float64
+		burst   int
 		enabled bool
 	}
 	smtp struct {
-		host string
-		port int
+		host     string
+		port     int
 		username string
 		password string
-		sender string
+		sender   string
 	}
 }
 
 type app struct {
 	config configuration
 	logger *slog.Logger
-	// models data.models
-	// mailer mailer.Mailer
+	models data.Models
+	mailer mailer.Mailer
 	wg sync.WaitGroup
 }
 
-// loads the application configuration from terminal flags or defaults in the env. 
+// loads the application configuration from terminal flags or defaults in the env.
 func loadConfig() configuration {
 	var cfg configuration
 
@@ -68,16 +70,16 @@ func loadConfig() configuration {
 	// Server settings
 	flag.IntVar(&cfg.port, "port", 4000, "API server port")
 	flag.StringVar(&cfg.env, "env", "development", "Environment (development|staging|production)")
-	
+
 	// Database settings
 	defaultDSN := dbDSN
 	if defaultDSN == "" {
 		defaultDSN = "user:password@/dbname?parseTime=true"
 	}
 	flag.StringVar(&cfg.db.dsn, "db-dsn", defaultDSN, "PostgreSQL DSN")
-	
+
 	// CORS trusted origins settings
-	flag.Func("cors-trusted-origins", "Trusted CORS origins (space separated)", 
+	flag.Func("cors-trusted-origins", "Trusted CORS origins (space separated)",
 		func(val string) error {
 			cfg.cors.trustedOrigins = strings.Fields(val)
 			return nil
@@ -96,7 +98,7 @@ func loadConfig() configuration {
 	flag.StringVar(&cfg.smtp.sender, "smtp-sender", smtpSender, "SMTP sender email")
 
 	flag.Parse()
-	
+
 	return cfg
 }
 
@@ -122,7 +124,7 @@ func setupLogger() *slog.Logger {
 
 	// Create a multi-writer that writes to both stdout and the log file
 	multiWriter := io.MultiWriter(os.Stdout, logFile)
-	
+
 	logger := slog.New(slog.NewTextHandler(multiWriter, nil))
 	return logger
 }
@@ -143,7 +145,7 @@ func openDB(settings configuration) (*sql.DB, error) {
 	if err != nil {
 		return nil, err
 	}
-	
+
 	return db, nil
 }
 
@@ -170,13 +172,13 @@ func main() {
 		// mailer: mailer.New(cfg.smtp.host, cfg.smtp.port, cfg.smtp.username, cfg.smtp.password, cfg.smtp.sender),
 	}
 
-	// publish basic expvar metrics 
+	// publish basic expvar metrics
 	expvar.NewString("version").Set(version)
 	expvar.NewString("env").Set(cfg.env)
 	expvar.Publish("goroutines", expvar.Func(func() any { return runtime.NumGoroutine() }))
 	expvar.Publish("database", expvar.Func(func() any { return db.Stats() }))
 
-	err = app.Serve() 
+	err = app.Serve()
 	if err != nil {
 		logger.Error(err.Error())
 		os.Exit(1)

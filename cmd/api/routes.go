@@ -9,11 +9,11 @@ import (
 func (a *app) routes() http.Handler {
 
 	const apiV1Route = "/v1"
-	
+
 	// Initialize the router
 	router := httprouter.New()
-	
-	// handle 404 
+
+	// handle 404
 	router.NotFound = http.HandlerFunc(a.notFoundResponse)
 
 	// Define API routes

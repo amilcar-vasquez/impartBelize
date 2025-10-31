@@ -7,11 +7,11 @@ import (
 	"io"
 	"net/http"
 	"net/url"
-	"os"
 	"strconv"
 	"strings"
 
 	"github.com/amilcar-vasquez/impartBelize/internal/validator"
+	"github.com/amilcar-vasquez/impartBelize/internal/data"
 	"github.com/julienschmidt/httprouter"
 )
 
@@ -19,7 +19,7 @@ import (
 type envelope map[string]any
 
 
-func (app *app) writeJSON(w http.ResponseWriter, status int, data any, headers http.Header) error {
+func (a *app) writeJSON(w http.ResponseWriter, status int, data envelope, headers http.Header) error {
 	jsResponse, err := json.MarshalIndent(data, "", "\t")
     if err != nil {
         return err
@@ -42,7 +42,7 @@ func (app *app) writeJSON(w http.ResponseWriter, status int, data any, headers h
     return nil
 }
 
-func (app *app) readJSON(w http.ResponseWriter, r *http.Request, destination any) error {
+func (a *app) readJSON(w http.ResponseWriter, r *http.Request, destination any) error {
 	// what is the max size of the request body (250KB seems reasonable)
     maxBytes := 256_000
     r.Body = http.MaxBytesReader(w, r.Body, int64(maxBytes))
@@ -174,12 +174,26 @@ func (a *app) background(fn func()) {
    }()
 }
 
-// getEnvAsInt reads an environment variable and converts it to int, returns defaultVal if not set or invalid
-func getEnvAsInt(key string, defaultVal int) int {
-	if val := os.Getenv(key); val != "" {
-		if intVal, err := strconv.Atoi(val); err == nil {
-			return intVal
-		}
+// Check if the current user can access a specific user's data
+// Administrators and Content Contributors can access all users
+// System Users can only access their own data
+func (a *app) canAccessUserData(currentUser *data.User, targetUserID int64) (bool, error) {
+	// Get the role of the current user
+	role, err := a.models.Roles.Get(currentUser.RoleID)
+	if err != nil {
+		return false, err
 	}
-	return defaultVal
+	
+	// Administrators and Content Contributors can access any user
+	if role.RoleName == "Administrator" || role.RoleName == "Content Contributor" {
+		return true, nil
+	}
+	
+	// System Users can only access their own data
+	if role.RoleName == "System User" {
+		return currentUser.ID == targetUserID, nil
+	}
+	
+	// Default: deny access
+	return false, nil
 }

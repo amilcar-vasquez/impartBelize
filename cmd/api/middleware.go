@@ -39,7 +39,6 @@ func (a *app) enableCORS(next http.Handler) http.Handler {
 	})
 }
 
-
 func (a *app) rateLimit(next http.Handler) http.Handler {
 	type client struct {
 		limiter  *rate.Limiter
