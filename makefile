@@ -40,3 +40,10 @@ db/migrations/version:
 db/migrations/force:
 	@echo 'Forcing migration to ${version} version...'
 	migrate -path ./migrations -database ${DB_DSN} force ${version}
+
+## test: run all tests
+.PHONY: test
+test:
+	@echo "Running tests..."
+	@go test -v ./...
+	@echo "Tests completed."

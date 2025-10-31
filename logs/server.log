@@ -22,3 +22,8 @@ time=2025-10-31T16:04:30.515-06:00 level=INFO msg="Starting server" address=:400
 time=2025-10-31T16:04:34.583-06:00 level=INFO msg="Shutting down server" signal=interrupt
 time=2025-10-31T16:04:34.584-06:00 level=INFO msg="Completing background tasks" address=:4000
 time=2025-10-31T16:04:34.584-06:00 level=INFO msg="Server stopped" addr=:4000
+time=2025-10-31T17:05:38.455-06:00 level=ERROR msg="pq: password authentication failed for user \"amilcar\""
+time=2025-10-31T17:14:56.697-06:00 level=INFO msg="Starting server" address=:4000 env=development
+time=2025-10-31T17:15:03.951-06:00 level=INFO msg="Shutting down server" signal=interrupt
+time=2025-10-31T17:15:03.952-06:00 level=INFO msg="Completing background tasks" address=:4000
+time=2025-10-31T17:15:03.952-06:00 level=INFO msg="Server stopped" addr=:4000
