@@ -65,3 +65,41 @@ time=2025-10-31T18:43:51.171-06:00 level=INFO msg="Starting server" address=:400
 time=2025-10-31T18:47:06.495-06:00 level=INFO msg="Starting server" address=:4000 env=development
 time=2025-10-31T18:47:06.496-06:00 level=ERROR msg="listen tcp :4000: bind: address already in use"
 time=2025-10-31T18:47:22.464-06:00 level=INFO msg="Starting server" address=:4000 env=development
+time=2025-10-31T19:15:39.320-06:00 level=ERROR msg="pq: duplicate key value violates unique constraint \"teachers_ssn_key\"" method=POST uri=/v1/teachers
+time=2025-10-31T19:16:48.819-06:00 level=ERROR msg="pq: duplicate key value violates unique constraint \"teachers_ssn_key\"" method=POST uri=/v1/teachers
+time=2025-10-31T19:17:08.400-06:00 level=INFO msg="Starting server" address=:4000 env=development
+time=2025-10-31T19:17:08.400-06:00 level=ERROR msg="listen tcp :4000: bind: address already in use"
+time=2025-10-31T19:17:41.334-06:00 level=ERROR msg="pq: duplicate key value violates unique constraint \"teachers_ssn_key\"" method=POST uri=/v1/teachers
+time=2025-10-31T19:17:56.903-06:00 level=INFO msg="Shutting down server" signal=terminated
+time=2025-10-31T19:17:56.903-06:00 level=INFO msg="Completing background tasks" address=:4000
+time=2025-10-31T19:17:56.903-06:00 level=INFO msg="Server stopped" addr=:4000
+time=2025-10-31T19:17:59.299-06:00 level=INFO msg="Starting server" address=:4000 env=development
+time=2025-10-31T19:18:12.662-06:00 level=INFO msg="Shutting down server" signal=interrupt
+time=2025-10-31T19:18:12.662-06:00 level=INFO msg="Completing background tasks" address=:4000
+time=2025-10-31T19:18:12.662-06:00 level=INFO msg="Server stopped" addr=:4000
+time=2025-10-31T19:18:20.321-06:00 level=INFO msg="Starting server" address=:4000 env=development
+time=2025-10-31T19:18:24.678-06:00 level=ERROR msg="failed to insert teacher" error="pq: duplicate key value violates unique constraint \"teachers_ssn_key\""
+time=2025-10-31T19:18:24.678-06:00 level=ERROR msg="pq: duplicate key value violates unique constraint \"teachers_ssn_key\"" method=POST uri=/v1/teachers
+time=2025-10-31T19:18:46.893-06:00 level=ERROR msg="failed to insert teacher" error="pq: duplicate key value violates unique constraint \"teachers_ssn_key\""
+time=2025-10-31T19:18:46.893-06:00 level=ERROR msg="pq: duplicate key value violates unique constraint \"teachers_ssn_key\"" method=POST uri=/v1/teachers
+time=2025-10-31T19:19:03.637-06:00 level=ERROR msg="failed to insert teacher" error="pq: duplicate key value violates unique constraint \"teachers_ssn_key\""
+time=2025-10-31T19:19:03.638-06:00 level=ERROR msg="pq: duplicate key value violates unique constraint \"teachers_ssn_key\"" method=POST uri=/v1/teachers
+time=2025-10-31T19:20:04.603-06:00 level=INFO msg="Starting server" address=:4000 env=development
+time=2025-10-31T19:20:04.603-06:00 level=ERROR msg="listen tcp :4000: bind: address already in use"
+time=2025-10-31T19:21:00.344-06:00 level=ERROR msg="failed to insert teacher" error="pq: duplicate key value violates unique constraint \"teachers_ssn_key\""
+time=2025-10-31T19:21:00.344-06:00 level=ERROR msg="pq: duplicate key value violates unique constraint \"teachers_ssn_key\"" method=POST uri=/v1/teachers
+time=2025-10-31T19:21:06.784-06:00 level=INFO msg="Starting server" address=:4000 env=development
+time=2025-10-31T19:21:06.785-06:00 level=ERROR msg="listen tcp :4000: bind: address already in use"
+time=2025-10-31T19:21:10.729-06:00 level=ERROR msg="failed to insert teacher" error="pq: duplicate key value violates unique constraint \"teachers_ssn_key\""
+time=2025-10-31T19:21:10.729-06:00 level=ERROR msg="pq: duplicate key value violates unique constraint \"teachers_ssn_key\"" method=POST uri=/v1/teachers
+time=2025-10-31T19:21:26.877-06:00 level=INFO msg="Shutting down server" signal=terminated
+time=2025-10-31T19:21:26.878-06:00 level=INFO msg="Completing background tasks" address=:4000
+time=2025-10-31T19:21:26.878-06:00 level=INFO msg="Server stopped" addr=:4000
+time=2025-10-31T19:22:39.565-06:00 level=INFO msg="Starting server" address=:4000 env=development
+time=2025-10-31T19:23:08.801-06:00 level=INFO msg="Shutting down server" signal=interrupt
+time=2025-10-31T19:23:08.801-06:00 level=INFO msg="Completing background tasks" address=:4000
+time=2025-10-31T19:23:08.801-06:00 level=INFO msg="Server stopped" addr=:4000
+time=2025-10-31T19:23:24.695-06:00 level=INFO msg="Starting server" address=:4000 env=development
+time=2025-10-31T19:23:34.113-06:00 level=INFO msg="Shutting down server" signal=interrupt
+time=2025-10-31T19:23:34.113-06:00 level=INFO msg="Completing background tasks" address=:4000
+time=2025-10-31T19:23:34.113-06:00 level=INFO msg="Server stopped" addr=:4000

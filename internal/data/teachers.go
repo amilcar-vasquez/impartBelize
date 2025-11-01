@@ -53,10 +53,47 @@ func (m *TeacherModel) Insert(t *Teacher) error {
 		district = nil
 	}
 
+	// Handle SSN - if empty string, convert to NULL
+	var ssn interface{}
+	if t.SSN != "" {
+		ssn = t.SSN
+	} else {
+		ssn = nil
+	}
+
+	// Handle optional string fields - if empty, convert to NULL
+	var gender interface{}
+	if t.Gender != "" {
+		gender = t.Gender
+	} else {
+		gender = nil
+	}
+
+	var maritalStatus interface{}
+	if t.MaritalStatus != "" {
+		maritalStatus = t.MaritalStatus
+	} else {
+		maritalStatus = nil
+	}
+
+	var address interface{}
+	if t.Address != "" {
+		address = t.Address
+	} else {
+		address = nil
+	}
+
+	var phone interface{}
+	if t.Phone != "" {
+		phone = t.Phone
+	} else {
+		phone = nil
+	}
+
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 
-	return m.DB.QueryRowContext(ctx, query, userID, t.FirstName, t.LastName, t.Gender, dob, t.SSN, t.MaritalStatus, t.Email, t.Address, district, t.Phone, t.ProfileStatus).Scan(&t.ID, &t.CreatedAt)
+	return m.DB.QueryRowContext(ctx, query, userID, t.FirstName, t.LastName, gender, dob, ssn, maritalStatus, t.Email, address, district, phone, t.ProfileStatus).Scan(&t.ID, &t.CreatedAt)
 }
 
 func (m *TeacherModel) Get(id int) (*Teacher, error) {

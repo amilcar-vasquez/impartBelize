@@ -49,19 +49,35 @@ class ApiService {
   /// Creates a new teacher
   Future<Teacher> createTeacher(Map<String, dynamic> teacherData) async {
     try {
+      print('Sending teacher data: ${json.encode(teacherData)}');
+      
       final response = await http.post(
         Uri.parse('$baseUrl/teachers'),
         headers: {'Content-Type': 'application/json'},
         body: json.encode(teacherData),
       );
 
+      print('Response status: ${response.statusCode}');
+      print('Response body: ${response.body}');
+
       if (response.statusCode == 201) {
         final Map<String, dynamic> data = json.decode(response.body);
         return Teacher.fromJson(data['teacher']);
       } else {
-        throw Exception('Failed to create teacher: ${response.statusCode}');
+        // Try to parse error message from response
+        String errorMessage = 'Failed to create teacher: ${response.statusCode}';
+        try {
+          final errorData = json.decode(response.body);
+          if (errorData['error'] != null) {
+            errorMessage = errorData['error'].toString();
+          }
+        } catch (_) {
+          // Use default error message
+        }
+        throw Exception(errorMessage);
       }
     } catch (e) {
+      print('Error creating teacher: $e');
       throw Exception('Error creating teacher: $e');
     }
   }

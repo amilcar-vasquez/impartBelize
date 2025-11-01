@@ -70,6 +70,8 @@ func (a *app) createTeacherHandler(w http.ResponseWriter, r *http.Request) {
 
 	err = a.models.Teachers.Insert(teacher)
 	if err != nil {
+		// Log the actual error for debugging
+		a.logger.Error("failed to insert teacher", "error", err)
 		a.serverErrorResponse(w, r, err)
 		return
 	}

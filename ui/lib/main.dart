@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'screens/teachers_screen.dart';
+import 'screens/license_application_screen.dart';
 
 void main() {
   runApp(const ImpartBelizeApp());
@@ -65,6 +66,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   static const List<Widget> _screens = [
     TeachersScreen(),
+    LicenseApplicationScreen(),
     PlaceholderScreen(title: 'Districts'),
     PlaceholderScreen(title: 'Institutions'),
     PlaceholderScreen(title: 'Settings'),
@@ -89,6 +91,11 @@ class _HomeScreenState extends State<HomeScreen> {
                   icon: Icon(Icons.people_outline),
                   selectedIcon: Icon(Icons.people),
                   label: Text('Teachers'),
+                ),
+                NavigationRailDestination(
+                  icon: Icon(Icons.description_outlined),
+                  selectedIcon: Icon(Icons.description),
+                  label: Text('Apply'),
                 ),
                 NavigationRailDestination(
                   icon: Icon(Icons.location_city_outlined),
@@ -127,6 +134,11 @@ class _HomeScreenState extends State<HomeScreen> {
                   icon: Icon(Icons.people_outline),
                   selectedIcon: Icon(Icons.people),
                   label: 'Teachers',
+                ),
+                NavigationDestination(
+                  icon: Icon(Icons.description_outlined),
+                  selectedIcon: Icon(Icons.description),
+                  label: 'Apply',
                 ),
                 NavigationDestination(
                   icon: Icon(Icons.location_city_outlined),
