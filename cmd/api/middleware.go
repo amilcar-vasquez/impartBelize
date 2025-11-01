@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net"
 	"net/http"
+	"strings"
 	"sync"
 	"time"
 
@@ -25,12 +26,28 @@ func (a *app) recoverPanic(next http.Handler) http.Handler {
 func (a *app) enableCORS(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Add("Vary", "Origin")
+		w.Header().Add("Vary", "Access-Control-Request-Method")
+
 		origin := r.Header.Get("Origin")
 
 		if origin != "" {
+			// Check if origin matches any trusted origin (with wildcard support)
 			for i := range a.config.cors.trustedOrigins {
-				if origin == a.config.cors.trustedOrigins[i] {
+				trusted := a.config.cors.trustedOrigins[i]
+				// Support wildcard matching for localhost and 127.0.0.1
+				if trusted == origin ||
+					(strings.HasSuffix(trusted, "*") && strings.HasPrefix(origin, trusted[:len(trusted)-1])) ||
+					(strings.Contains(origin, "localhost") && strings.Contains(trusted, "localhost")) ||
+					(strings.Contains(origin, "127.0.0.1") && strings.Contains(trusted, "127.0.0.1")) {
+
 					w.Header().Set("Access-Control-Allow-Origin", origin)
+					w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE, OPTIONS")
+					w.Header().Set("Access-Control-Allow-Headers", "Authorization, Content-Type")
+
+					if r.Method == "OPTIONS" {
+						w.WriteHeader(http.StatusOK)
+						return
+					}
 					break
 				}
 			}

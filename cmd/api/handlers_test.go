@@ -21,7 +21,7 @@ func newTestApp(t *testing.T) *app {
 			env:     "test",
 		},
 		logger: slog.New(slog.NewTextHandler(io.Discard, nil)),
-		models: data.Models{},
+		models: data.NewTestModels(),
 	}
 }
 

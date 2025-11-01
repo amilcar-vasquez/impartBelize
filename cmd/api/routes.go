@@ -47,6 +47,7 @@ func (a *app) routes() http.Handler {
 	router.HandlerFunc(http.MethodDelete, apiV1Route+"/institutions/:id", a.deleteInstitutionHandler)
 
 	// Teacher routes (use query params for filtering by user_id)
+	router.HandlerFunc(http.MethodGet, apiV1Route+"/teachers", a.listTeachersHandler)
 	router.HandlerFunc(http.MethodPost, apiV1Route+"/teachers", a.createTeacherHandler)
 	router.HandlerFunc(http.MethodGet, apiV1Route+"/teachers/:id", a.getTeacherHandler)
 	router.HandlerFunc(http.MethodDelete, apiV1Route+"/teachers/:id", a.deleteTeacherHandler)

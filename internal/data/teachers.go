@@ -148,3 +148,68 @@ func (m *TeacherModel) Delete(id int) error {
 	}
 	return nil
 }
+
+// GetAll retrieves all teachers from the database
+func (m *TeacherModel) GetAll() ([]*Teacher, error) {
+	query := `
+		SELECT teacher_id, user_id, first_name, last_name, gender, dob, ssn, 
+		       marital_status, email, address, district_id, phone, profile_status, created_at 
+		FROM teachers 
+		ORDER BY created_at DESC`
+
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	rows, err := m.DB.QueryContext(ctx, query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	teachers := []*Teacher{}
+
+	for rows.Next() {
+		var t Teacher
+		var dob sql.NullTime
+		var userID sql.NullInt64
+		var district sql.NullInt64
+
+		err := rows.Scan(
+			&t.ID,
+			&userID,
+			&t.FirstName,
+			&t.LastName,
+			&t.Gender,
+			&dob,
+			&t.SSN,
+			&t.MaritalStatus,
+			&t.Email,
+			&t.Address,
+			&district,
+			&t.Phone,
+			&t.ProfileStatus,
+			&t.CreatedAt,
+		)
+		if err != nil {
+			return nil, err
+		}
+
+		if dob.Valid {
+			t.DOB = &dob.Time
+		}
+		if userID.Valid {
+			t.UserID = int(userID.Int64)
+		}
+		if district.Valid {
+			t.DistrictID = int(district.Int64)
+		}
+
+		teachers = append(teachers, &t)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return teachers, nil
+}

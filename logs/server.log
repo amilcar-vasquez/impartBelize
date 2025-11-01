@@ -27,3 +27,41 @@ time=2025-10-31T17:14:56.697-06:00 level=INFO msg="Starting server" address=:400
 time=2025-10-31T17:15:03.951-06:00 level=INFO msg="Shutting down server" signal=interrupt
 time=2025-10-31T17:15:03.952-06:00 level=INFO msg="Completing background tasks" address=:4000
 time=2025-10-31T17:15:03.952-06:00 level=INFO msg="Server stopped" addr=:4000
+time=2025-10-31T18:26:47.457-06:00 level=INFO msg="Starting server" address=:4000 env=development
+time=2025-10-31T18:31:20.660-06:00 level=INFO msg="Shutting down server" signal=interrupt
+time=2025-10-31T18:31:20.660-06:00 level=INFO msg="Completing background tasks" address=:4000
+time=2025-10-31T18:31:20.660-06:00 level=INFO msg="Server stopped" addr=:4000
+time=2025-10-31T18:32:22.077-06:00 level=INFO msg="Starting server" address=:4000 env=development
+time=2025-10-31T18:32:49.818-06:00 level=INFO msg="Shutting down server" signal=interrupt
+time=2025-10-31T18:32:49.818-06:00 level=INFO msg="Completing background tasks" address=:4000
+time=2025-10-31T18:32:49.818-06:00 level=INFO msg="Server stopped" addr=:4000
+time=2025-10-31T18:32:57.665-06:00 level=ERROR msg="pq: password authentication failed for user \"amilcar\""
+time=2025-10-31T18:33:24.269-06:00 level=INFO msg="Starting server" address=:4000 env=development
+time=2025-10-31T18:33:37.202-06:00 level=INFO msg="Shutting down server" signal=interrupt
+time=2025-10-31T18:33:37.202-06:00 level=INFO msg="Completing background tasks" address=:4000
+time=2025-10-31T18:33:37.202-06:00 level=INFO msg="Server stopped" addr=:4000
+time=2025-10-31T18:33:44.667-06:00 level=INFO msg="Starting server" address=:4000 env=development
+time=2025-10-31T18:35:25.194-06:00 level=INFO msg="Starting server" address=:4000 env=development
+time=2025-10-31T18:35:25.194-06:00 level=ERROR msg="listen tcp :4000: bind: address already in use"
+time=2025-10-31T18:35:36.642-06:00 level=INFO msg="Starting server" address=:4000 env=development
+time=2025-10-31T18:35:46.124-06:00 level=ERROR msg="runtime error: invalid memory address or nil pointer dereference" method=GET uri=/v1/teachers
+time=2025-10-31T18:36:39.223-06:00 level=INFO msg="Starting server" address=:4000 env=development
+time=2025-10-31T18:37:16.755-06:00 level=ERROR msg="pq: duplicate key value violates unique constraint \"teachers_ssn_key\"" method=POST uri=/v1/teachers
+time=2025-10-31T18:37:16.803-06:00 level=ERROR msg="pq: duplicate key value violates unique constraint \"teachers_ssn_key\"" method=POST uri=/v1/teachers
+time=2025-10-31T18:37:24.737-06:00 level=ERROR msg="pq: duplicate key value violates unique constraint \"teachers_ssn_key\"" method=POST uri=/v1/teachers
+time=2025-10-31T18:38:30.291-06:00 level=INFO msg="Starting server" address=:4000 env=development
+time=2025-10-31T18:38:30.292-06:00 level=ERROR msg="listen tcp :4000: bind: address already in use"
+time=2025-10-31T18:38:47.464-06:00 level=INFO msg="Starting server" address=:4000 env=development
+time=2025-10-31T18:38:47.465-06:00 level=ERROR msg="listen tcp :4000: bind: address already in use"
+time=2025-10-31T18:39:36.867-06:00 level=INFO msg="Starting server" address=:4000 env=development
+time=2025-10-31T18:39:36.868-06:00 level=ERROR msg="listen tcp :4000: bind: address already in use"
+time=2025-10-31T18:41:19.511-06:00 level=INFO msg="Starting server" address=:4000 env=development
+time=2025-10-31T18:41:19.511-06:00 level=ERROR msg="listen tcp :4000: bind: address already in use"
+time=2025-10-31T18:43:32.350-06:00 level=INFO msg="Starting server" address=:4000 env=development
+time=2025-10-31T18:43:44.340-06:00 level=INFO msg="Shutting down server" signal=interrupt
+time=2025-10-31T18:43:44.341-06:00 level=INFO msg="Completing background tasks" address=:4000
+time=2025-10-31T18:43:44.341-06:00 level=INFO msg="Server stopped" addr=:4000
+time=2025-10-31T18:43:51.171-06:00 level=INFO msg="Starting server" address=:4000 env=development
+time=2025-10-31T18:47:06.495-06:00 level=INFO msg="Starting server" address=:4000 env=development
+time=2025-10-31T18:47:06.496-06:00 level=ERROR msg="listen tcp :4000: bind: address already in use"
+time=2025-10-31T18:47:22.464-06:00 level=INFO msg="Starting server" address=:4000 env=development

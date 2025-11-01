@@ -157,3 +157,17 @@ func (a *app) deleteTeacherHandler(w http.ResponseWriter, r *http.Request) {
 		a.serverErrorResponse(w, r, err)
 	}
 }
+
+// listTeachersHandler handles GET /v1/teachers
+func (a *app) listTeachersHandler(w http.ResponseWriter, r *http.Request) {
+	teachers, err := a.models.Teachers.GetAll()
+	if err != nil {
+		a.serverErrorResponse(w, r, err)
+		return
+	}
+
+	err = a.writeJSON(w, http.StatusOK, envelope{"teachers": teachers}, nil)
+	if err != nil {
+		a.serverErrorResponse(w, r, err)
+	}
+}

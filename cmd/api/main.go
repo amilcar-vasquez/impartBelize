@@ -14,10 +14,9 @@ import (
 	"sync"
 	"time"
 
-	_ "github.com/lib/pq" // PostgreSQL driver
 	"github.com/amilcar-vasquez/impartBelize/internal/data"
 	"github.com/amilcar-vasquez/impartBelize/internal/mailer"
-
+	_ "github.com/lib/pq" // PostgreSQL driver
 )
 
 const version = "1.0.0"
@@ -56,9 +55,9 @@ type configuration struct {
 type app struct {
 	config configuration
 	logger *slog.Logger
-	models data.Models
+	models *data.Models
 	mailer mailer.Mailer
-	wg sync.WaitGroup
+	wg     sync.WaitGroup
 }
 
 // loads the application configuration from terminal flags or defaults in the env.
@@ -168,7 +167,7 @@ func main() {
 	app := &app{
 		config: cfg,
 		logger: logger,
-		// models: data.NewModels(db),
+		models: data.NewModels(db),
 		// mailer: mailer.New(cfg.smtp.host, cfg.smtp.port, cfg.smtp.username, cfg.smtp.password, cfg.smtp.sender),
 	}
 
