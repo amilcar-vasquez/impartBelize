@@ -4,7 +4,8 @@ include .envrc
 .PHONY: run/api
 run/api:
 	@echo "Running API server..."
-	@go run ./cmd/api --port=4000 --env=development --db-dsn=${DB_DSN}
+	@go run ./cmd/api --port=4000 --env=development --db-dsn=${DB_DSN} --smtp-host=${SMTP_HOST} --smtp-port=${SMTP_PORT} --smtp-username=${SMTP_USERNAME} --smtp-password=${SMTP_PASSWORD}
+	
 
 
 ## db/psql: connect to the database using psql (terminal)
@@ -25,6 +26,7 @@ db/migrations/up:
 	migrate -path ./migrations -database ${DB_DSN} up
 
 ## db/migrations/down: rollback last migration
+# use version=N to rollback to a specific version
 .PHONY: db/migrations/down
 db/migrations/down:
 	@echo 'Rolling back last successful migration...'

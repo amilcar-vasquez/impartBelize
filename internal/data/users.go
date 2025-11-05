@@ -270,11 +270,11 @@ func (m *UserModel) Update(user *User) error {
 
 // UpdateActivation updates only the is_active field for a user
 // This is used when activating a user account via email token
-func (m *UserModel) UpdateActivation(userID int64, isActive bool) error {
+func (m *UserModel) UpdateActivation(userID int64, isActive bool, isActivated bool) error {
 	query := `
 		UPDATE users
-		SET is_active = $1, updated_at = NOW()
-		WHERE user_id = $2
+		SET is_active = $1, is_activated = $2, updated_at = NOW()
+		WHERE user_id = $3
 		RETURNING updated_at
 	`
 
@@ -282,7 +282,7 @@ func (m *UserModel) UpdateActivation(userID int64, isActive bool) error {
 	defer cancel()
 
 	var updatedAt time.Time
-	err := m.DB.QueryRowContext(ctx, query, isActive, userID).Scan(&updatedAt)
+	err := m.DB.QueryRowContext(ctx, query, isActive, isActivated, userID).Scan(&updatedAt)
 	if err != nil {
 		switch {
 		case errors.Is(err, sql.ErrNoRows):
@@ -507,15 +507,15 @@ func (u *UserModel) GetForToken(tokenScope, tokenPlaintext string) (*User, error
 	query := `
         SELECT users.user_id, users.created_at, users.username,
                users.email, users.password_hash, users.is_active, 
-               users.role_id, roles.role_name
+               users.role_id, roles.name
         FROM users
-        INNER JOIN tokens
+        INNER JOIN auth_tokens as tokens
         ON users.user_id = tokens.user_id
         INNER JOIN roles
         ON users.role_id = roles.role_id
-        WHERE tokens.hash = $1
+        WHERE tokens.token = $1
         AND tokens.scope = $2 
-        AND tokens.expiry > $3
+        AND tokens.expires_at > $3
        `
 	args := []any{tokenHash[:], tokenScope, time.Now()}
 	var user User

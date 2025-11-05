@@ -18,7 +18,6 @@ func (a *app) registerUserHandler(w http.ResponseWriter, r *http.Request) {
 		Username string `json:"username"`
 		Password string `json:"password"`
 		Email    string `json:"email"`
-		RoleID   *int   `json:"role_id,omitempty"`
 	}
 	err := a.readJSON(w, r, &incomingData)
 	if err != nil {
@@ -33,9 +32,6 @@ func (a *app) registerUserHandler(w http.ResponseWriter, r *http.Request) {
 		RoleID:      3,     // Default role (keep same default as before)
 		IsActive:    false, // Must activate via email
 		IsActivated: false,
-	}
-	if incomingData.RoleID != nil {
-		user.RoleID = *incomingData.RoleID
 	}
 
 	// hash the password and store it (sets plaintext pointer too)
@@ -80,6 +76,7 @@ func (a *app) registerUserHandler(w http.ResponseWriter, r *http.Request) {
 		data := map[string]any{
 			"activationToken": token.Plaintext,
 			"userID":          user.ID,
+			"username":        user.Username,
 		}
 
 		err = a.mailer.Send(user.Email, "user_welcome.tmpl", data)
@@ -130,7 +127,7 @@ func (a *app) activateUserHandler(w http.ResponseWriter, r *http.Request) {
 
 	// User provided the right token so activate them
 	a.logger.Info("Activating user", "user_id", user.ID, "username", user.Username, "email", user.Email)
-	err = a.models.Users.UpdateActivation(user.ID, true)
+	err = a.models.Users.UpdateActivation(user.ID, true, true)
 	if err != nil {
 		switch {
 		case errors.Is(err, data.ErrRecordNotFound):
@@ -144,6 +141,7 @@ func (a *app) activateUserHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Update the user object for the response
 	user.IsActive = true
+	user.IsActivated = true
 
 	// User has been activated so delete the activation token to
 	// prevent reuse.

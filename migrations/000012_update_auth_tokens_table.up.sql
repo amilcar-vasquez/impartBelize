@@ -1,0 +1,3 @@
+ALTER TABLE auth_tokens
+DROP COLUMN IF EXISTS revoked,
+ADD COLUMN scope VARCHAR(100);

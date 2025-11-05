@@ -30,7 +30,7 @@ type RoleModel struct {
 // Insert a new role record in the database
 func (r *RoleModel) Insert(role *Role) error {
 	query := `
-		INSERT INTO roles (role_name)
+		INSERT INTO roles (name)
 		VALUES ($1)
 		RETURNING role_id`
 
@@ -47,7 +47,7 @@ func (r *RoleModel) Get(id int) (*Role, error) {
 	}
 
 	query := `
-		SELECT role_id, role_name
+		SELECT role_id, name
 		FROM roles
 		WHERE role_id = $1`
 
@@ -76,9 +76,9 @@ func (r *RoleModel) Get(id int) (*Role, error) {
 // GetByName retrieves a role by its name (useful for authentication)
 func (r *RoleModel) GetByName(name string) (*Role, error) {
 	query := `
-		SELECT role_id, role_name
+		SELECT role_id, name
 		FROM roles
-		WHERE role_name = $1`
+		WHERE name = $1`
 
 	var role Role
 
@@ -105,9 +105,9 @@ func (r *RoleModel) GetByName(name string) (*Role, error) {
 // GetAll retrieves all roles from the database
 func (r *RoleModel) GetAll() ([]*Role, error) {
 	query := `
-		SELECT role_id, role_name
+		SELECT role_id, name
 		FROM roles
-		ORDER BY role_name`
+		ORDER BY name`
 
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
@@ -145,7 +145,7 @@ func (r *RoleModel) GetAll() ([]*Role, error) {
 func (r *RoleModel) Update(role *Role) error {
 	query := `
 		UPDATE roles
-		SET role_name = $2
+		SET name = $2
 		WHERE role_id = $1`
 
 	args := []interface{}{

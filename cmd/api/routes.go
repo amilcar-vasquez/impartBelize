@@ -19,8 +19,10 @@ func (a *app) routes() http.Handler {
 	// Define API routes
 	router.HandlerFunc(http.MethodGet, apiV1Route+"/healthcheck", a.healthCheckHandler)
 
-	// User routes
+	// !User routes
+	// *-- Register a New User -- *
 	router.HandlerFunc(http.MethodPost, apiV1Route+"/users", a.registerUserHandler)
+	// *-- Activate a User -- *
 	router.HandlerFunc(http.MethodPut, apiV1Route+"/users/activated", a.activateUserHandler)
 	router.HandlerFunc(http.MethodGet, apiV1Route+"/users", a.getAllUsersHandler)
 	router.HandlerFunc(http.MethodGet, apiV1Route+"/users/:id", a.getUserHandler)
@@ -73,9 +75,10 @@ func (a *app) routes() http.Handler {
 	router.HandlerFunc(http.MethodDelete, apiV1Route+"/notifications/:id", a.deleteNotificationHandler)
 
 	// Token routes
+	// *-- get token for login -- *
 	router.HandlerFunc(http.MethodPost, apiV1Route+"/tokens/authentication", a.createAuthTokenHandler)
+	// *-- create an activation token -- *
 	router.HandlerFunc(http.MethodPost, apiV1Route+"/tokens/activation", a.createActivationTokenHandler)
-	router.HandlerFunc(http.MethodPost, apiV1Route+"/tokens/validate", a.validateTokenHandler)
 	router.HandlerFunc(http.MethodDelete, apiV1Route+"/tokens/user/:user_id", a.deleteAllTokensForUserHandler)
 
 	// Apply middleware

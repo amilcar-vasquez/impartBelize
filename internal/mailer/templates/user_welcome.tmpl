@@ -4,7 +4,7 @@
 {{define "subject"}}Welcome to the Impart Belize License Portal!{{end}}
 
 {{define "plainBody"}}
-Hi,
+Hi {{.username}},
 
 Thanks for signing up as a teacher for the Impart Belize License Portal. We're excited to have you on board!
 
@@ -30,7 +30,7 @@ The Impart Belize License Portal Team
 </head>
 
 <body>
-    <p>Hi,</p>
+    <p>Hi {{.username}},</p>
     <p>Thanks for signing up as a teacher for the Impart Belize License Portal. We're excited 
        to have you on board!</p>
     <p>For future reference, your user ID number is {{.userID}}.</p>
