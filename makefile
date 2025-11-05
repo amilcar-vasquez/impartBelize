@@ -47,3 +47,9 @@ test:
 	@echo "Running tests..."
 	@go test -v ./...
 	@echo "Tests completed."
+
+## db/setup: run the setup script to create the database
+.PHONY: db/setup
+db/setup:
+	@echo "Setting up the database..."
+	@./scripts/dbSetup.sh

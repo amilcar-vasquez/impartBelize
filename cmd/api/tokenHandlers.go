@@ -2,6 +2,7 @@
 package main
 
 import (
+	"errors"
 	"net/http"
 	"time"
 
@@ -12,8 +13,8 @@ import (
 // createAuthTokenHandler handles POST /v1/tokens/authentication
 func (a *app) createAuthTokenHandler(w http.ResponseWriter, r *http.Request) {
 	var input struct {
-		UserID int64         `json:"user_id"`
-		TTL    time.Duration `json:"ttl,omitempty"` // in seconds
+		Email	string        `json:"email"`
+		Password string        `json:"password"`
 	}
 
 	err := a.readJSON(w, r, &input)
@@ -23,21 +24,39 @@ func (a *app) createAuthTokenHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	v := validator.New()
-	v.Check(input.UserID > 0, "user_id", "must be provided")
+	data.ValidateEmail(v, input.Email)
+	data.ValidatePasswordPlaintext(v, input.Password)
 
 	if !v.IsEmpty() {
 		a.failedValidationResponse(w, r, v.Errors)
 		return
 	}
 
-	// Default TTL to 24 hours if not provided
-	ttl := input.TTL
-	if ttl == 0 {
-		ttl = 24 * time.Hour
+	user, err := a.models.Users.GetByEmail(input.Email)
+    if err != nil {
+        switch {
+            case errors.Is(err, data.ErrRecordNotFound):
+                a.invalidCredentialsResponse(w, r)
+            default:
+                a.serverErrorResponse(w, r, err)
+        }
+        return
+    }
+
+	// The user is found. Does their password match?
+	match, err := user.Password.Matches(input.Password)
+    if err != nil {
+        a.serverErrorResponse(w, r, err)
+        return
+    }
+
+	if !match {
+		a.invalidCredentialsResponse(w, r)
+		return
 	}
 
 	// Create the token
-	token, err := a.models.Tokens.New(input.UserID, ttl, data.ScopeAuthentication)
+	token, err := a.models.Tokens.New(user.ID, 24*time.Hour, data.ScopeAuthentication)
 	if err != nil {
 		a.serverErrorResponse(w, r, err)
 		return
