@@ -29,13 +29,12 @@ func (a *app) routes() http.Handler {
 	// Protected user routes - Admin, CEO, DEC, TSC can view all users (must be activated)
 	router.Handler(http.MethodGet, apiV1Route+"/users", a.requireAnyRole([]string{"Admin", "CEO", "DEC", "TSC"}, http.HandlerFunc(a.getAllUsersHandler)))
 	router.Handler(http.MethodGet, apiV1Route+"/users/:id", a.requireActivatedUser(a.getUserHandler))
-	
 	// Admin, CEO, and DEC can update users (must be activated)
 	router.Handler(http.MethodPatch, apiV1Route+"/users/:id", a.requireActivatedUser(a.updateUserHandler))
-	
 	// Only Admin can delete users (must be activated)
 	router.Handler(http.MethodDelete, apiV1Route+"/users/:id", 
 		a.requireRole("Admin", http.HandlerFunc(a.deleteUserHandler)))
+
 	// Role routes - Only Admin can manage roles (must be activated)
 	router.Handler(http.MethodPost, apiV1Route+"/roles", 
 		a.requireRole("Admin", http.HandlerFunc(a.createRoleHandler)))
