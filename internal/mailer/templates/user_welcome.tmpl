@@ -10,10 +10,9 @@ Thanks for signing up as a teacher for the Impart Belize License Portal. We're e
 
 For future reference, your user ID number is {{.userID}}.
 
-Please send a request to the `PUT /v1/users/activated` endpoint with 
-the following JSON body to activate your teacher account:
+Please copy and paste the following token string into the input field in the app to activate your teacher account:
 
-{"token": "{{.activationToken}}"}
+{{.activationToken}}
 
 Please note that this is a one-time use token and it will expire in 3 days.
 
@@ -34,11 +33,9 @@ The Impart Belize License Portal Team
     <p>Thanks for signing up as a teacher for the Impart Belize License Portal. We're excited 
        to have you on board!</p>
     <p>For future reference, your user ID number is {{.userID}}.</p>
-    <p>Please send a request to the <code>PUT /v1/users/activated</code> 
-       endpoint with the following JSON body to activate your teacher account:</p>
-    <pre><code>
-    {"token": "{{.activationToken}}"}
-    </code></pre>
+    <p>Please copy and paste the following token string into the input field in the app 
+       to activate your teacher account:</p>
+    <pre><code>{{.activationToken}}</code></pre>
     <p>Please note that this is a one-time use token and it will 
        expire in 3 days.</p>
 

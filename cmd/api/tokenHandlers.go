@@ -60,6 +60,12 @@ func (a *app) createAuthTokenHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Is the user activated?
+	if !user.IsActivated {
+		a.inactiveAccountResponse(w, r)
+		return
+	}
+
 	// Create the token
 	token, err := a.models.Tokens.New(user.ID, ttl, data.ScopeAuthentication)
 	if err != nil {
