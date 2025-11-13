@@ -28,12 +28,10 @@ func (a *app) routes() http.Handler {
 	
 	// Protected user routes - Admin, CEO, DEC, TSC can view all users (must be activated)
 	router.Handler(http.MethodGet, apiV1Route+"/users", a.requireAnyRole([]string{"Admin", "CEO", "DEC", "TSC"}, http.HandlerFunc(a.getAllUsersHandler)))
-	router.Handler(http.MethodGet, apiV1Route+"/users/:id", 
-		a.requireAnyRole([]string{"Admin", "CEO", "DEC", "TSC"}, http.HandlerFunc(a.getUserHandler)))
+	router.Handler(http.MethodGet, apiV1Route+"/users/:id", a.requireActivatedUser(a.getUserHandler))
 	
 	// Admin, CEO, and DEC can update users (must be activated)
-	router.Handler(http.MethodPatch, apiV1Route+"/users/:id", 
-		a.requireAnyRole([]string{"Admin", "CEO", "DEC"}, http.HandlerFunc(a.updateUserHandler)))
+	router.Handler(http.MethodPatch, apiV1Route+"/users/:id", a.requireActivatedUser(a.updateUserHandler))
 	
 	// Only Admin can delete users (must be activated)
 	router.Handler(http.MethodDelete, apiV1Route+"/users/:id", 
@@ -120,6 +118,7 @@ func (a *app) routes() http.Handler {
 	// Apply middleware
 	handler := a.recoverPanic(router)
 	handler = a.enableCORS(handler)
+	handler = a.authenticate(handler)
 	handler = a.rateLimit(handler)
 
 	return handler

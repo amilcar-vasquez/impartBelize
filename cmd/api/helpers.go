@@ -10,8 +10,8 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/amilcar-vasquez/impartBelize/internal/validator"
 	"github.com/amilcar-vasquez/impartBelize/internal/data"
+	"github.com/amilcar-vasquez/impartBelize/internal/validator"
 	"github.com/julienschmidt/httprouter"
 )
 
@@ -185,12 +185,12 @@ func (a *app) canAccessUserData(currentUser *data.User, targetUserID int64) (boo
 	}
 	
 	// Administrators and Content Contributors can access any user
-	if role.RoleName == "Administrator" || role.RoleName == "Content Contributor" {
+	if role.RoleName == "Admin" || role.RoleName == "CEO" || role.RoleName == "DEC" || role.RoleName == "TSC" {
 		return true, nil
 	}
 	
 	// System Users can only access their own data
-	if role.RoleName == "System User" {
+	if role.RoleName == "Teacher" {
 		return currentUser.ID == targetUserID, nil
 	}
 	
