@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:ui/screens/auth/register_screen.dart';
 import 'screens/teachers_screen.dart';
 import 'screens/license_application_screen.dart';
-import 'screens/login_screen.dart';
+import 'screens/auth/login_screen.dart';
+import 'screens/auth/activation_screen.dart';
 import 'screens/settings_screen.dart';
 import 'services/auth_service.dart';
 
@@ -50,6 +52,8 @@ class ImpartBelizeApp extends StatelessWidget {
       routes: {
         '/': (context) => const AuthWrapper(),
         '/login': (context) => const LoginScreen(),
+        '/register': (context) => const RegisterScreen(),
+        '/activate': (context) => const ActivationScreen(),
         '/home': (context) => const HomeScreen(),
       },
     );

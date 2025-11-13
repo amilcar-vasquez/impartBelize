@@ -1,35 +1,31 @@
 import 'package:flutter/material.dart';
-import '../services/auth_service.dart';
-import '../config/app_config.dart';
+import 'package:flutter/services.dart';
+import '../../services/user_service.dart';
+import '../../config/app_config.dart';
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+class ActivationScreen extends StatefulWidget {
+  const ActivationScreen({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  State<ActivationScreen> createState() => _ActivationScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _ActivationScreenState extends State<ActivationScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _emailController = TextEditingController();
-  final _passwordController = TextEditingController();
-  final _authService = AuthService();
+  final _codeController = TextEditingController();
+  final _userService = UserService();
 
   bool _isLoading = false;
-  bool _obscurePassword = true;
   String? _errorMessage;
 
   @override
   void dispose() {
-    _emailController.dispose();
-    _passwordController.dispose();
+    _codeController.dispose();
     super.dispose();
   }
 
-  Future<void> _handleLogin() async {
-    if (!_formKey.currentState!.validate()) {
-      return;
-    }
+  Future<void> _handleActivation() async {
+    if (!_formKey.currentState!.validate()) return;
 
     setState(() {
       _isLoading = true;
@@ -37,14 +33,16 @@ class _LoginScreenState extends State<LoginScreen> {
     });
 
     try {
-      await _authService.login(
-        _emailController.text.trim(),
-        _passwordController.text,
-      );
+      await _userService.activateUser(_codeController.text.trim());
 
       if (mounted) {
-        // Navigate to home screen on success
-        Navigator.of(context).pushReplacementNamed('/home');
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Account activated successfully! Please sign in.'),
+            backgroundColor: Colors.green,
+          ),
+        );
+        Navigator.of(context).pushReplacementNamed('/login');
       }
     } catch (e) {
       setState(() {
@@ -52,24 +50,23 @@ class _LoginScreenState extends State<LoginScreen> {
       });
     } finally {
       if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
+        setState(() => _isLoading = false);
       }
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
-    final isMobile = screenWidth < AppConfig.mobileBreakpoint;
+    final isMobile =
+        MediaQuery.of(context).size.width < AppConfig.mobileBreakpoint;
 
     return Scaffold(
+      appBar: AppBar(title: const Text('Activate Account')),
       body: Center(
         child: SingleChildScrollView(
           padding: EdgeInsets.symmetric(
-            horizontal: isMobile ? 24.0 : 48.0,
-            vertical: 24.0,
+            horizontal: isMobile ? 24 : 48,
+            vertical: 24,
           ),
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 400),
@@ -83,22 +80,22 @@ class _LoginScreenState extends State<LoginScreen> {
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      // Logo or App Name
+                      // Icon
                       Icon(
-                        Icons.school,
+                        Icons.mark_email_read_outlined,
                         size: 64,
                         color: Theme.of(context).colorScheme.primary,
                       ),
                       const SizedBox(height: 16),
                       Text(
-                        AppConfig.appName,
+                        'Check your email',
                         style: Theme.of(context).textTheme.headlineMedium
                             ?.copyWith(fontWeight: FontWeight.bold),
                         textAlign: TextAlign.center,
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        'Sign in to continue',
+                        'We sent you an activation code. Enter it below to activate your account.',
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                           color: Theme.of(context).colorScheme.onSurfaceVariant,
                         ),
@@ -136,71 +133,31 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                         ),
 
-                      // Email Field
+                      // Activation Code Field
                       TextFormField(
-                        controller: _emailController,
+                        controller: _codeController,
                         decoration: const InputDecoration(
-                          labelText: 'Email',
-                          prefixIcon: Icon(Icons.email_outlined),
+                          labelText: 'Activation Token',
                           border: OutlineInputBorder(),
                         ),
-                        keyboardType: TextInputType.emailAddress,
-                        textInputAction: TextInputAction.next,
-                        autocorrect: false,
-                        enableSuggestions: false,
-                        textCapitalization: TextCapitalization.none,
-                        enabled: !_isLoading,
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please enter your email';
-                          }
-                          if (!value.contains('@')) {
-                            return 'Please enter a valid email';
-                          }
-                          return null;
-                        },
-                      ),
-                      const SizedBox(height: 16),
-
-                      // Password Field
-                      TextFormField(
-                        controller: _passwordController,
-                        decoration: InputDecoration(
-                          labelText: 'Password',
-                          prefixIcon: const Icon(Icons.lock_outlined),
-                          border: const OutlineInputBorder(),
-                          suffixIcon: IconButton(
-                            icon: Icon(
-                              _obscurePassword
-                                  ? Icons.visibility_outlined
-                                  : Icons.visibility_off_outlined,
-                            ),
-                            onPressed: () {
-                              setState(() {
-                                _obscurePassword = !_obscurePassword;
-                              });
-                            },
-                          ),
-                        ),
-                        obscureText: _obscurePassword,
+                        textAlign: TextAlign.center,
+                        enableInteractiveSelection: true,
+                        keyboardType: TextInputType.text,
                         textInputAction: TextInputAction.done,
                         enabled: !_isLoading,
-                        onFieldSubmitted: (_) => _handleLogin(),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
-                            return 'Please enter your password';
-                          }
-                          if (value.length < 6) {
-                            return 'Password must be at least 6 characters';
+                            return 'Please enter the activation token';
                           }
                           return null;
                         },
+                        onFieldSubmitted: (_) => _handleActivation(),
                       ),
                       const SizedBox(height: 24),
 
-                      // Login Button
+                      // Activate Button
                       FilledButton(
-                        onPressed: _isLoading ? null : _handleLogin,
+                        onPressed: _isLoading ? null : _handleActivation,
                         style: FilledButton.styleFrom(
                           padding: const EdgeInsets.symmetric(vertical: 16),
                         ),
@@ -213,19 +170,18 @@ class _LoginScreenState extends State<LoginScreen> {
                                 ),
                               )
                             : const Text(
-                                'Sign In',
+                                'Activate Account',
                                 style: TextStyle(fontSize: 16),
                               ),
                       ),
                       const SizedBox(height: 16),
 
-                      // Version Info
-                      Text(
-                        'Version ${AppConfig.appVersion}',
-                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: Theme.of(context).colorScheme.onSurfaceVariant,
-                        ),
-                        textAlign: TextAlign.center,
+                      // Back to Login
+                      TextButton(
+                        onPressed: () => Navigator.of(
+                          context,
+                        ).pushReplacementNamed('/login'),
+                        child: const Text('Back to Sign In'),
                       ),
                     ],
                   ),

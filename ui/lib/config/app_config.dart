@@ -12,8 +12,6 @@ class AppConfig {
     if (kIsWeb) {
       return 'http://localhost:4000/v1';
     } else if (Platform.isAndroid) {
-      final url = 'http://10.0.2.2:4000/v1';
-      print('API base URL: $url');
       return 'http://10.0.2.2:4000/v1';
     } else {
       // iOS simulator, desktop, or other platforms
