@@ -75,7 +75,7 @@ func (t TokenModel) New(userID int64, ttl time.Duration, scope string) (*Token, 
 // Do the actual insert in to the database table
 func (t TokenModel) Insert(token *Token) error {
     query := `
-              INSERT INTO tokens (hash, user_id, expiry, scope) 
+              INSERT INTO auth_tokens (token, user_id, expires_at, scope) 
               VALUES ($1, $2, $3, $4)
             `
 	args := []any{token.Hash, token.UserID, token.Expiry, token.Scope}
@@ -90,7 +90,7 @@ func (t TokenModel) Insert(token *Token) error {
 // Delete a token based on the type and the user
 func (t TokenModel) DeleteAllForUser(scope string, userID int64) error {
 	query := `
-            DELETE FROM tokens 
+            DELETE FROM auth_tokens 
             WHERE scope = $1 AND user_id = $2
 			`
     ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)

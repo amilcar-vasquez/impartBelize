@@ -103,7 +103,106 @@ time=2025-10-31T19:23:24.695-06:00 level=INFO msg="Starting server" address=:400
 time=2025-10-31T19:23:34.113-06:00 level=INFO msg="Shutting down server" signal=interrupt
 time=2025-10-31T19:23:34.113-06:00 level=INFO msg="Completing background tasks" address=:4000
 time=2025-10-31T19:23:34.113-06:00 level=INFO msg="Server stopped" addr=:4000
-time=2025-11-04T18:57:41.398-06:00 level=INFO msg="Starting server" address=:4000 env=development
-time=2025-11-04T19:33:49.875-06:00 level=INFO msg="Shutting down server" signal=interrupt
-time=2025-11-04T19:33:49.876-06:00 level=INFO msg="Completing background tasks" address=:4000
-time=2025-11-04T19:33:49.876-06:00 level=INFO msg="Server stopped" addr=:4000
+time=2025-11-04T20:31:57.830-06:00 level=INFO msg="Starting server" address=:4000 env=development
+time=2025-11-04T20:38:25.140-06:00 level=ERROR msg="pq: column \"role_name\" of relation \"roles\" does not exist" method=POST uri=/v1/roles
+time=2025-11-04T20:41:18.984-06:00 level=INFO msg="Shutting down server" signal=interrupt
+time=2025-11-04T20:41:18.985-06:00 level=INFO msg="Completing background tasks" address=:4000
+time=2025-11-04T20:41:18.985-06:00 level=INFO msg="Server stopped" addr=:4000
+time=2025-11-04T20:41:22.633-06:00 level=INFO msg="Starting server" address=:4000 env=development
+time=2025-11-04T20:59:51.369-06:00 level=ERROR msg="pq: relation \"tokens\" does not exist" method=POST uri=/v1/users
+time=2025-11-04T21:06:07.446-06:00 level=ERROR msg="pq: duplicate key value violates unique constraint \"users_username_key\"" method=POST uri=/v1/users
+time=2025-11-04T21:06:51.009-06:00 level=ERROR msg="pq: relation \"tokens\" does not exist" method=POST uri=/v1/users
+time=2025-11-04T21:07:01.855-06:00 level=INFO msg="Shutting down server" signal=interrupt
+time=2025-11-04T21:07:01.855-06:00 level=INFO msg="Completing background tasks" address=:4000
+time=2025-11-04T21:07:01.855-06:00 level=INFO msg="Server stopped" addr=:4000
+time=2025-11-04T21:07:07.618-06:00 level=INFO msg="Starting server" address=:4000 env=development
+time=2025-11-04T21:07:22.726-06:00 level=ERROR msg="pq: column \"hash\" of relation \"auth_tokens\" does not exist" method=POST uri=/v1/users
+time=2025-11-04T21:14:13.353-06:00 level=INFO msg="Shutting down server" signal=interrupt
+time=2025-11-04T21:14:13.353-06:00 level=INFO msg="Completing background tasks" address=:4000
+time=2025-11-04T21:14:13.353-06:00 level=INFO msg="Server stopped" addr=:4000
+time=2025-11-04T21:21:09.493-06:00 level=INFO msg="Starting server" address=:4000 env=development
+time=2025-11-04T21:22:08.900-06:00 level=INFO msg="Shutting down server" signal=interrupt
+time=2025-11-04T21:22:08.901-06:00 level=INFO msg="Completing background tasks" address=:4000
+time=2025-11-04T21:22:08.903-06:00 level=INFO msg="Server stopped" addr=:4000
+time=2025-11-04T21:22:11.873-06:00 level=INFO msg="Starting server" address=:4000 env=development
+time=2025-11-04T21:23:44.973-06:00 level=ERROR msg="pq: invalid byte sequence for encoding \"UTF8\": 0x98" method=POST uri=/v1/users
+time=2025-11-04T21:37:31.551-06:00 level=INFO msg="Shutting down server" signal=interrupt
+time=2025-11-04T21:37:31.551-06:00 level=INFO msg="Completing background tasks" address=:4000
+time=2025-11-04T21:37:31.551-06:00 level=INFO msg="Server stopped" addr=:4000
+time=2025-11-04T21:37:36.345-06:00 level=INFO msg="Starting server" address=:4000 env=development
+time=2025-11-04T21:41:10.839-06:00 level=INFO msg="Shutting down server" signal=interrupt
+time=2025-11-04T21:41:10.839-06:00 level=INFO msg="Completing background tasks" address=:4000
+time=2025-11-04T21:41:10.839-06:00 level=INFO msg="Server stopped" addr=:4000
+time=2025-11-04T21:45:47.018-06:00 level=INFO msg="Starting server" address=:4000 env=development
+time=2025-11-04T21:45:59.225-06:00 level=ERROR msg="pq: invalid byte sequence for encoding \"UTF8\": 0xb5" method=POST uri=/v1/users
+time=2025-11-04T21:48:40.388-06:00 level=INFO msg="Shutting down server" signal=interrupt
+time=2025-11-04T21:48:40.388-06:00 level=INFO msg="Completing background tasks" address=:4000
+time=2025-11-04T21:48:40.388-06:00 level=INFO msg="Server stopped" addr=:4000
+time=2025-11-04T21:50:26.192-06:00 level=INFO msg="Starting server" address=:4000 env=development
+time=2025-11-04T21:51:57.945-06:00 level=ERROR msg="runtime error: invalid memory address or nil pointer dereference"
+time=2025-11-04T22:00:04.013-06:00 level=INFO msg="Shutting down server" signal=interrupt
+time=2025-11-04T22:00:04.013-06:00 level=INFO msg="Completing background tasks" address=:4000
+time=2025-11-04T22:00:04.013-06:00 level=INFO msg="Server stopped" addr=:4000
+time=2025-11-04T22:00:06.819-06:00 level=INFO msg="Starting server" address=:4000 env=development
+time=2025-11-04T22:00:14.811-06:00 level=ERROR msg="runtime error: invalid memory address or nil pointer dereference"
+time=2025-11-04T22:02:38.832-06:00 level=INFO msg="Shutting down server" signal=interrupt
+time=2025-11-04T22:02:38.833-06:00 level=INFO msg="Completing background tasks" address=:4000
+time=2025-11-04T22:02:38.833-06:00 level=INFO msg="Server stopped" addr=:4000
+time=2025-11-04T22:03:55.787-06:00 level=INFO msg="Starting server" address=:4000 env=development
+time=2025-11-04T22:06:32.070-06:00 level=INFO msg="Shutting down server" signal=interrupt
+time=2025-11-04T22:06:32.070-06:00 level=INFO msg="Completing background tasks" address=:4000
+time=2025-11-04T22:06:32.070-06:00 level=INFO msg="Server stopped" addr=:4000
+time=2025-11-04T22:06:35.361-06:00 level=INFO msg="Starting server" address=:4000 env=development
+time=2025-11-04T22:06:48.532-06:00 level=ERROR msg="runtime error: invalid memory address or nil pointer dereference"
+time=2025-11-04T22:07:12.267-06:00 level=INFO msg="Shutting down server" signal=interrupt
+time=2025-11-04T22:07:12.267-06:00 level=INFO msg="Completing background tasks" address=:4000
+time=2025-11-04T22:07:12.267-06:00 level=INFO msg="Server stopped" addr=:4000
+time=2025-11-04T22:07:29.790-06:00 level=INFO msg="Starting server" address=:4000 env=development
+time=2025-11-04T22:07:43.001-06:00 level=ERROR msg="dial tcp: lookup \"smtp.gmail.com\": no such host"
+time=2025-11-04T22:10:09.147-06:00 level=INFO msg="Shutting down server" signal=interrupt
+time=2025-11-04T22:10:09.147-06:00 level=INFO msg="Completing background tasks" address=:4000
+time=2025-11-04T22:10:09.147-06:00 level=INFO msg="Server stopped" addr=:4000
+time=2025-11-04T22:11:33.964-06:00 level=INFO msg="Starting server" address=:4000 env=development
+time=2025-11-04T22:12:14.910-06:00 level=ERROR msg="gomail: could not send email 1: gomail: invalid address \"\\\"Impart Belize <noreply@impartbelize.com>\\\"\": mail: no angle-addr"
+time=2025-11-04T22:13:29.866-06:00 level=INFO msg="Shutting down server" signal=interrupt
+time=2025-11-04T22:13:29.866-06:00 level=INFO msg="Completing background tasks" address=:4000
+time=2025-11-04T22:13:29.866-06:00 level=INFO msg="Server stopped" addr=:4000
+time=2025-11-04T22:13:33.200-06:00 level=INFO msg="Starting server" address=:4000 env=development
+time=2025-11-04T22:13:45.911-06:00 level=ERROR msg="gomail: could not send email 1: gomail: invalid address \"\\\"\\\\\\\"Impart Belize <noreply@impartbelize.com>\\\\\\\"\\\"\": mail: no angle-addr"
+time=2025-11-04T22:14:53.833-06:00 level=INFO msg="Shutting down server" signal=interrupt
+time=2025-11-04T22:14:53.833-06:00 level=INFO msg="Completing background tasks" address=:4000
+time=2025-11-04T22:14:53.833-06:00 level=INFO msg="Server stopped" addr=:4000
+time=2025-11-04T22:14:57.946-06:00 level=INFO msg="Starting server" address=:4000 env=development
+time=2025-11-04T22:19:53.648-06:00 level=ERROR msg="pq: relation \"tokens\" does not exist" method=PUT uri=/v1/users/activated
+time=2025-11-04T22:21:04.456-06:00 level=ERROR msg="pq: relation \"tokens\" does not exist" method=PUT uri=/v1/users/activated
+time=2025-11-04T22:21:07.530-06:00 level=INFO msg="Shutting down server" signal=interrupt
+time=2025-11-04T22:21:07.530-06:00 level=INFO msg="Completing background tasks" address=:4000
+time=2025-11-04T22:21:07.530-06:00 level=INFO msg="Server stopped" addr=:4000
+time=2025-11-04T22:21:10.300-06:00 level=INFO msg="Starting server" address=:4000 env=development
+time=2025-11-04T22:21:12.326-06:00 level=ERROR msg="pq: column roles.role_name does not exist" method=PUT uri=/v1/users/activated
+time=2025-11-04T22:23:11.031-06:00 level=INFO msg="Shutting down server" signal=interrupt
+time=2025-11-04T22:23:11.031-06:00 level=INFO msg="Completing background tasks" address=:4000
+time=2025-11-04T22:23:11.031-06:00 level=INFO msg="Server stopped" addr=:4000
+time=2025-11-04T22:23:13.485-06:00 level=INFO msg="Starting server" address=:4000 env=development
+time=2025-11-04T22:23:15.447-06:00 level=INFO msg="Activating user" user_id=7 username=lpanti email=lee.14.panti@gmail.com
+time=2025-11-12T22:27:12.817-06:00 level=INFO msg="Starting server" address=:4000 env=development
+time=2025-11-12T23:47:01.075-06:00 level=INFO msg="Shutting down server" signal=interrupt
+time=2025-11-12T23:47:01.075-06:00 level=INFO msg="Completing background tasks" address=:4000
+time=2025-11-12T23:47:01.075-06:00 level=INFO msg="Server stopped" addr=:4000
+time=2025-11-12T23:47:03.326-06:00 level=INFO msg="Starting server" address=:4000 env=development
+time=2025-11-12T23:53:16.911-06:00 level=INFO msg="Shutting down server" signal=interrupt
+time=2025-11-12T23:53:16.911-06:00 level=INFO msg="Completing background tasks" address=:4000
+time=2025-11-12T23:53:16.911-06:00 level=INFO msg="Server stopped" addr=:4000
+time=2025-11-12T23:53:21.232-06:00 level=INFO msg="Starting server" address=:4000 env=development
+time=2025-11-13T00:10:31.390-06:00 level=INFO msg="Activating user" user_id=9 username=lee email=leepanti2018@gmail.com
+time=2025-11-13T00:19:18.737-06:00 level=INFO msg="Shutting down server" signal=interrupt
+time=2025-11-13T00:19:18.737-06:00 level=INFO msg="Completing background tasks" address=:4000
+time=2025-11-13T00:19:18.737-06:00 level=INFO msg="Server stopped" addr=:4000
+time=2025-11-13T00:36:16.190-06:00 level=INFO msg="Starting server" address=:4000 env=development
+time=2025-11-13T00:40:37.659-06:00 level=INFO msg="Shutting down server" signal=interrupt
+time=2025-11-13T00:40:37.660-06:00 level=INFO msg="Completing background tasks" address=:4000
+time=2025-11-13T00:40:37.660-06:00 level=INFO msg="Server stopped" addr=:4000
+time=2025-11-13T00:40:40.443-06:00 level=INFO msg="Starting server" address=:4000 env=development
+time=2025-11-13T00:52:06.530-06:00 level=INFO msg="Shutting down server" signal=interrupt
+time=2025-11-13T00:52:06.530-06:00 level=INFO msg="Completing background tasks" address=:4000
+time=2025-11-13T00:52:06.530-06:00 level=INFO msg="Server stopped" addr=:4000

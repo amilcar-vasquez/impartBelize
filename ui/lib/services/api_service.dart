@@ -2,17 +2,21 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../models/teacher.dart';
 import '../config/app_config.dart';
+import 'auth_service.dart';
 
 class ApiService {
+  final AuthService _authService = AuthService();
+
   // Get base URL from configuration
   static String get baseUrl => AppConfig.apiBaseUrl;
 
   /// Fetches all teachers from the API
   Future<List<Teacher>> fetchTeachers() async {
     try {
+      final headers = await _authService.getAuthHeaders();
       final response = await http.get(
         Uri.parse('$baseUrl/teachers'),
-        headers: {'Content-Type': 'application/json'},
+        headers: headers,
       );
 
       if (response.statusCode == 200) {
@@ -30,9 +34,10 @@ class ApiService {
   /// Fetches a single teacher by ID
   Future<Teacher> fetchTeacher(int id) async {
     try {
+      final headers = await _authService.getAuthHeaders();
       final response = await http.get(
         Uri.parse('$baseUrl/teachers/$id'),
-        headers: {'Content-Type': 'application/json'},
+        headers: headers,
       );
 
       if (response.statusCode == 200) {
@@ -50,10 +55,11 @@ class ApiService {
   Future<Teacher> createTeacher(Map<String, dynamic> teacherData) async {
     try {
       print('Sending teacher data: ${json.encode(teacherData)}');
-      
+
+      final headers = await _authService.getAuthHeaders();
       final response = await http.post(
         Uri.parse('$baseUrl/teachers'),
-        headers: {'Content-Type': 'application/json'},
+        headers: headers,
         body: json.encode(teacherData),
       );
 
@@ -65,7 +71,8 @@ class ApiService {
         return Teacher.fromJson(data['teacher']);
       } else {
         // Try to parse error message from response
-        String errorMessage = 'Failed to create teacher: ${response.statusCode}';
+        String errorMessage =
+            'Failed to create teacher: ${response.statusCode}';
         try {
           final errorData = json.decode(response.body);
           if (errorData['error'] != null) {
@@ -83,11 +90,15 @@ class ApiService {
   }
 
   /// Updates an existing teacher
-  Future<Teacher> updateTeacher(int id, Map<String, dynamic> teacherData) async {
+  Future<Teacher> updateTeacher(
+    int id,
+    Map<String, dynamic> teacherData,
+  ) async {
     try {
+      final headers = await _authService.getAuthHeaders();
       final response = await http.patch(
         Uri.parse('$baseUrl/teachers/$id'),
-        headers: {'Content-Type': 'application/json'},
+        headers: headers,
         body: json.encode(teacherData),
       );
 
@@ -105,9 +116,10 @@ class ApiService {
   /// Deletes a teacher
   Future<void> deleteTeacher(int id) async {
     try {
+      final headers = await _authService.getAuthHeaders();
       final response = await http.delete(
         Uri.parse('$baseUrl/teachers/$id'),
-        headers: {'Content-Type': 'application/json'},
+        headers: headers,
       );
 
       if (response.statusCode != 200) {

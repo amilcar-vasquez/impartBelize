@@ -36,7 +36,7 @@ class _LicenseApplicationScreenState extends State<LicenseApplicationScreen> {
     'Single',
     'Married',
     'Divorced',
-    'Widowed'
+    'Widowed',
   ];
 
   // Mock districts - In production, fetch from API
@@ -125,7 +125,7 @@ class _LicenseApplicationScreenState extends State<LicenseApplicationScreen> {
       if (_selectedDistrictId != null) {
         teacherData['district_id'] = _selectedDistrictId;
       }
-      
+
       teacherData['profile_status'] = 'pending';
 
       await _apiService.createTeacher(teacherData);
@@ -229,130 +229,108 @@ class _LicenseApplicationScreenState extends State<LicenseApplicationScreen> {
                       padding: const EdgeInsets.all(24.0),
                       child: Column(
                         children: [
-                          Row(
-                            children: [
-                              Expanded(
-                                child: TextFormField(
-                                  controller: _firstNameController,
-                                  decoration: const InputDecoration(
-                                    labelText: 'First Name *',
-                                    border: OutlineInputBorder(),
-                                    prefixIcon: Icon(Icons.person),
-                                  ),
-                                  validator: (value) {
-                                    if (value == null || value.trim().isEmpty) {
-                                      return 'First name is required';
-                                    }
-                                    return null;
-                                  },
-                                ),
+                          TextFormField(
+                            controller: _firstNameController,
+                            decoration: const InputDecoration(
+                              labelText: 'First Name *',
+                              border: OutlineInputBorder(),
+                              prefixIcon: Icon(Icons.person),
+                            ),
+                            validator: (value) {
+                              if (value == null || value.trim().isEmpty) {
+                                return 'First name is required';
+                              }
+                              return null;
+                            },
+                          ),
+                          const SizedBox(height: 16),
+                          TextFormField(
+                            controller: _lastNameController,
+                            decoration: const InputDecoration(
+                              labelText: 'Last Name *',
+                              border: OutlineInputBorder(),
+                              prefixIcon: Icon(Icons.person_outline),
+                            ),
+                            validator: (value) {
+                              if (value == null || value.trim().isEmpty) {
+                                return 'Last name is required';
+                              }
+                              return null;
+                            },
+                          ),
+                          const SizedBox(height: 16),
+                          DropdownButtonFormField<String>(
+                            value: _selectedGender,
+                            decoration: const InputDecoration(
+                              labelText: 'Gender',
+                              border: OutlineInputBorder(),
+                              prefixIcon: Icon(Icons.wc),
+                            ),
+                            items: _genderOptions.map((gender) {
+                              return DropdownMenuItem(
+                                value: gender,
+                                child: Text(gender),
+                              );
+                            }).toList(),
+                            onChanged: (value) {
+                              setState(() {
+                                _selectedGender = value;
+                              });
+                            },
+                          ),
+                          const SizedBox(height: 16),
+                          InkWell(
+                            onTap: () => _selectDate(context),
+                            child: InputDecorator(
+                              decoration: const InputDecoration(
+                                labelText: 'Date of Birth',
+                                border: OutlineInputBorder(),
+                                prefixIcon: Icon(Icons.calendar_today),
                               ),
-                              const SizedBox(width: 16),
-                              Expanded(
-                                child: TextFormField(
-                                  controller: _lastNameController,
-                                  decoration: const InputDecoration(
-                                    labelText: 'Last Name *',
-                                    border: OutlineInputBorder(),
-                                    prefixIcon: Icon(Icons.person_outline),
-                                  ),
-                                  validator: (value) {
-                                    if (value == null || value.trim().isEmpty) {
-                                      return 'Last name is required';
-                                    }
-                                    return null;
-                                  },
-                                ),
+                              child: Text(
+                                _dateOfBirth == null
+                                    ? 'Select date'
+                                    : DateFormat(
+                                        'MMM dd, yyyy',
+                                      ).format(_dateOfBirth!),
                               ),
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+                          TextFormField(
+                            controller: _ssnController,
+                            decoration: const InputDecoration(
+                              labelText: 'Social Security Number',
+                              border: OutlineInputBorder(),
+                              prefixIcon: Icon(Icons.badge),
+                              hintText: '000-00-0000',
+                            ),
+                            inputFormatters: [
+                              FilteringTextInputFormatter.allow(
+                                RegExp(r'[0-9-]'),
+                              ),
+                              LengthLimitingTextInputFormatter(11),
                             ],
                           ),
                           const SizedBox(height: 16),
-                          Row(
-                            children: [
-                              Expanded(
-                                child: DropdownButtonFormField<String>(
-                                  value: _selectedGender,
-                                  decoration: const InputDecoration(
-                                    labelText: 'Gender',
-                                    border: OutlineInputBorder(),
-                                    prefixIcon: Icon(Icons.wc),
-                                  ),
-                                  items: _genderOptions.map((gender) {
-                                    return DropdownMenuItem(
-                                      value: gender,
-                                      child: Text(gender),
-                                    );
-                                  }).toList(),
-                                  onChanged: (value) {
-                                    setState(() {
-                                      _selectedGender = value;
-                                    });
-                                  },
-                                ),
-                              ),
-                              const SizedBox(width: 16),
-                              Expanded(
-                                child: InkWell(
-                                  onTap: () => _selectDate(context),
-                                  child: InputDecorator(
-                                    decoration: const InputDecoration(
-                                      labelText: 'Date of Birth',
-                                      border: OutlineInputBorder(),
-                                      prefixIcon: Icon(Icons.calendar_today),
-                                    ),
-                                    child: Text(
-                                      _dateOfBirth == null
-                                          ? 'Select date'
-                                          : DateFormat('MMM dd, yyyy')
-                                              .format(_dateOfBirth!),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 16),
-                          Row(
-                            children: [
-                              Expanded(
-                                child: TextFormField(
-                                  controller: _ssnController,
-                                  decoration: const InputDecoration(
-                                    labelText: 'Social Security Number',
-                                    border: OutlineInputBorder(),
-                                    prefixIcon: Icon(Icons.badge),
-                                    hintText: '000-00-0000',
-                                  ),
-                                  inputFormatters: [
-                                    FilteringTextInputFormatter.allow(
-                                        RegExp(r'[0-9-]')),
-                                    LengthLimitingTextInputFormatter(11),
-                                  ],
-                                ),
-                              ),
-                              const SizedBox(width: 16),
-                              Expanded(
-                                child: DropdownButtonFormField<String>(
-                                  value: _selectedMaritalStatus,
-                                  decoration: const InputDecoration(
-                                    labelText: 'Marital Status',
-                                    border: OutlineInputBorder(),
-                                    prefixIcon: Icon(Icons.family_restroom),
-                                  ),
-                                  items: _maritalStatusOptions.map((status) {
-                                    return DropdownMenuItem(
-                                      value: status,
-                                      child: Text(status),
-                                    );
-                                  }).toList(),
-                                  onChanged: (value) {
-                                    setState(() {
-                                      _selectedMaritalStatus = value;
-                                    });
-                                  },
-                                ),
-                              ),
-                            ],
+                          DropdownButtonFormField<String>(
+                            value: _selectedMaritalStatus,
+                            decoration: const InputDecoration(
+                              labelText: 'Marital Status',
+                              border: OutlineInputBorder(),
+                              prefixIcon: Icon(Icons.family_restroom),
+                            ),
+                            items: _maritalStatusOptions.map((status) {
+                              return DropdownMenuItem(
+                                value: status,
+                                child: Text(status),
+                              );
+                            }).toList(),
+                            onChanged: (value) {
+                              setState(() {
+                                _selectedMaritalStatus = value;
+                              });
+                            },
                           ),
                         ],
                       ),
@@ -384,8 +362,9 @@ class _LicenseApplicationScreenState extends State<LicenseApplicationScreen> {
                               if (value == null || value.trim().isEmpty) {
                                 return 'Email is required';
                               }
-                              if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$')
-                                  .hasMatch(value)) {
+                              if (!RegExp(
+                                r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
+                              ).hasMatch(value)) {
                                 return 'Please enter a valid email';
                               }
                               return null;
@@ -403,7 +382,8 @@ class _LicenseApplicationScreenState extends State<LicenseApplicationScreen> {
                             keyboardType: TextInputType.phone,
                             inputFormatters: [
                               FilteringTextInputFormatter.allow(
-                                  RegExp(r'[0-9-]')),
+                                RegExp(r'[0-9-]'),
+                              ),
                             ],
                           ),
                           const SizedBox(height: 16),
@@ -457,9 +437,7 @@ class _LicenseApplicationScreenState extends State<LicenseApplicationScreen> {
                           )
                         : const Icon(Icons.send),
                     label: Text(
-                      _isSubmitting
-                          ? 'Submitting...'
-                          : 'Submit Application',
+                      _isSubmitting ? 'Submitting...' : 'Submit Application',
                     ),
                     style: FilledButton.styleFrom(
                       padding: const EdgeInsets.all(20),

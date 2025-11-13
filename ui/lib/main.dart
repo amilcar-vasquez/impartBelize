@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:ui/screens/auth/register_screen.dart';
 import 'screens/teachers_screen.dart';
 import 'screens/license_application_screen.dart';
+import 'screens/auth/login_screen.dart';
+import 'screens/auth/activation_screen.dart';
+import 'screens/settings_screen.dart';
+import 'services/auth_service.dart';
 
 void main() {
   runApp(const ImpartBelizeApp());
@@ -26,10 +31,7 @@ class ImpartBelizeApp extends StatelessWidget {
             borderRadius: BorderRadius.all(Radius.circular(12)),
           ),
         ),
-        appBarTheme: const AppBarTheme(
-          centerTitle: false,
-          elevation: 0,
-        ),
+        appBarTheme: const AppBarTheme(centerTitle: false, elevation: 0),
       ),
       darkTheme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
@@ -43,13 +45,44 @@ class ImpartBelizeApp extends StatelessWidget {
             borderRadius: BorderRadius.all(Radius.circular(12)),
           ),
         ),
-        appBarTheme: const AppBarTheme(
-          centerTitle: false,
-          elevation: 0,
-        ),
+        appBarTheme: const AppBarTheme(centerTitle: false, elevation: 0),
       ),
       themeMode: ThemeMode.system,
-      home: const HomeScreen(),
+      initialRoute: '/',
+      routes: {
+        '/': (context) => const AuthWrapper(),
+        '/login': (context) => const LoginScreen(),
+        '/register': (context) => const RegisterScreen(),
+        '/activate': (context) => const ActivationScreen(),
+        '/home': (context) => const HomeScreen(),
+      },
+    );
+  }
+}
+
+/// Wrapper to check authentication status and redirect accordingly
+class AuthWrapper extends StatelessWidget {
+  const AuthWrapper({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<bool>(
+      future: AuthService().isAuthenticated(),
+      builder: (context, snapshot) {
+        // Show loading indicator while checking auth status
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Scaffold(
+            body: Center(child: CircularProgressIndicator()),
+          );
+        }
+
+        // Navigate based on authentication status
+        if (snapshot.data == true) {
+          return const HomeScreen();
+        } else {
+          return const LoginScreen();
+        }
+      },
     );
   }
 }
@@ -69,7 +102,7 @@ class _HomeScreenState extends State<HomeScreen> {
     LicenseApplicationScreen(),
     PlaceholderScreen(title: 'Districts'),
     PlaceholderScreen(title: 'Institutions'),
-    PlaceholderScreen(title: 'Settings'),
+    SettingsScreen(),
   ];
 
   @override
@@ -116,9 +149,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           if (MediaQuery.of(context).size.width >= 640)
             const VerticalDivider(thickness: 1, width: 1),
-          Expanded(
-            child: _screens[_selectedIndex],
-          ),
+          Expanded(child: _screens[_selectedIndex]),
         ],
       ),
       bottomNavigationBar: MediaQuery.of(context).size.width < 640
@@ -165,17 +196,12 @@ class _HomeScreenState extends State<HomeScreen> {
 class PlaceholderScreen extends StatelessWidget {
   final String title;
 
-  const PlaceholderScreen({
-    super.key,
-    required this.title,
-  });
+  const PlaceholderScreen({super.key, required this.title});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(title),
-      ),
+      appBar: AppBar(title: Text(title)),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -194,8 +220,8 @@ class PlaceholderScreen extends StatelessWidget {
             Text(
               'Coming soon...',
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
-                  ),
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
             ),
           ],
         ),

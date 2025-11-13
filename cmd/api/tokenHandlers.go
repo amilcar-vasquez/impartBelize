@@ -13,7 +13,7 @@ import (
 // createAuthTokenHandler handles POST /v1/tokens/authentication
 func (a *app) createAuthTokenHandler(w http.ResponseWriter, r *http.Request) {
 	var input struct {
-		Email	string        `json:"email"`
+		Email    string        `json:"email"`
 		Password string        `json:"password"`
 	}
 
@@ -32,7 +32,11 @@ func (a *app) createAuthTokenHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user, err := a.models.Users.GetByEmail(input.Email)
+	// Default TTL to 24 hours if not provided
+	ttl := 24 * time.Hour
+
+	// Is there an associated user for the provided email?
+    user, err := a.models.Users.GetByEmail(input.Email)
     if err != nil {
         switch {
             case errors.Is(err, data.ErrRecordNotFound):
@@ -50,13 +54,20 @@ func (a *app) createAuthTokenHandler(w http.ResponseWriter, r *http.Request) {
         return
     }
 
+	// Wrong password
 	if !match {
 		a.invalidCredentialsResponse(w, r)
 		return
 	}
 
+	// Is the user activated?
+	if !user.IsActivated {
+		a.inactiveAccountResponse(w, r)
+		return
+	}
+
 	// Create the token
-	token, err := a.models.Tokens.New(user.ID, 24*time.Hour, data.ScopeAuthentication)
+	token, err := a.models.Tokens.New(user.ID, ttl, data.ScopeAuthentication)
 	if err != nil {
 		a.serverErrorResponse(w, r, err)
 		return
@@ -130,35 +141,6 @@ func (a *app) deleteAllTokensForUserHandler(w http.ResponseWriter, r *http.Reque
 	}
 
 	err = a.writeJSON(w, http.StatusOK, envelope{"message": "tokens successfully deleted"}, nil)
-	if err != nil {
-		a.serverErrorResponse(w, r, err)
-	}
-}
-
-// validateTokenHandler handles POST /v1/tokens/validate
-func (a *app) validateTokenHandler(w http.ResponseWriter, r *http.Request) {
-	var input struct {
-		Token string `json:"token"`
-	}
-
-	err := a.readJSON(w, r, &input)
-	if err != nil {
-		a.badRequestResponse(w, r, err)
-		return
-	}
-
-	v := validator.New()
-	data.ValidateTokenPlaintext(v, input.Token)
-
-	if !v.IsEmpty() {
-		a.failedValidationResponse(w, r, v.Errors)
-		return
-	}
-
-	// For validation, you would typically look up the user by token
-	// This requires a GetForToken method on UserModel which exists
-	// but we'll just validate the format here
-	err = a.writeJSON(w, http.StatusOK, envelope{"message": "token format is valid"}, nil)
 	if err != nil {
 		a.serverErrorResponse(w, r, err)
 	}
