@@ -6,9 +6,8 @@ export
 .PHONY: run/api
 run/api:
 	@echo "Running API server..."
-	@go run ./cmd/api --port=4000 --env=development --db-dsn=${DB_DSN} --smtp-host=${SMTP_HOST} --smtp-port=${SMTP_PORT} --smtp-username=${SMTP_USERNAME} --smtp-password=${SMTP_PASSWORD}
-	
-
+	@go run ./cmd/api --port=4000 --env=development --db-dsn=${DB_DSN} --smtp-host=${SMTP_HOST} --smtp-port=${SMTP_PORT} --smtp-username=${SMTP_USERNAME} --smtp-password=${SMTP_PASSWORD} \
+	-cors-trusted-origins="http://localhost:45341"
 
 ## db/psql: connect to the database using psql (terminal)
 .PHONY: db/psql
