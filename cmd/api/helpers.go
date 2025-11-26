@@ -185,7 +185,7 @@ func (a *app) canAccessUserData(currentUser *data.User, targetUserID int64) (boo
 	}
 	
 	// Administrators and Content Contributors can access any user
-	if role.RoleName == "Admin" || role.RoleName == "CEO" || role.RoleName == "DEC" || role.RoleName == "TSC" {
+	if role.RoleName == "admin" || role.RoleName == "CEO" || role.RoleName == "DEC" || role.RoleName == "TSC" {
 		return true, nil
 	}
 	

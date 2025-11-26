@@ -354,8 +354,9 @@ func (u *UserModel) Get(id int) (*User, error) {
 // GetAll retrieves all users with filtering and pagination
 func (u *UserModel) GetAll(regionID, formationID, rankID int, isActive *bool, lastName string, username string, filters Filters) ([]*User, Metadata, error) {
 	query := `
-		SELECT count(*) OVER(), user_id, username, email, role_id, is_active, is_activated, last_login, created_at, created_by, updated_at, updated_by
-		FROM users
+		SELECT count(*) OVER(), u.user_id, u.username, u.email, u.role_id, r.name as role_name, u.is_active, u.is_activated, u.last_login, u.created_at, u.created_by, u.updated_at, u.updated_by
+		FROM users u
+		LEFT JOIN roles r ON u.role_id = r.role_id
 		WHERE 1=1`
 
 	args := []interface{}{}
@@ -427,6 +428,7 @@ func (u *UserModel) GetAll(regionID, formationID, rankID int, isActive *bool, la
 		var lastLogin sql.NullTime
 		var createdBy sql.NullInt64
 		var updatedBy sql.NullInt64
+		var roleName sql.NullString
 
 		err := rows.Scan(
 			&totalRecords,
@@ -434,6 +436,7 @@ func (u *UserModel) GetAll(regionID, formationID, rankID int, isActive *bool, la
 			&user.Username,
 			&user.Email,
 			&user.RoleID,
+			&roleName,
 			&user.IsActive,
 			&user.IsActivated,
 			&lastLogin,
@@ -447,6 +450,9 @@ func (u *UserModel) GetAll(regionID, formationID, rankID int, isActive *bool, la
 			return nil, Metadata{}, err
 		}
 
+		if roleName.Valid {
+			user.RoleName = roleName.String
+		}
 		if lastLogin.Valid {
 			user.LastLogin = &lastLogin.Time
 		}
