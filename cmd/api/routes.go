@@ -72,6 +72,13 @@ func (a *app) routes() http.Handler {
 		a.requireActivatedUser(http.HandlerFunc(a.listTeachersHandler)))
 	router.Handler(http.MethodPost, apiV1Route+"/teachers", 
 		a.requireActivatedUser(http.HandlerFunc(a.createTeacherHandler)))
+	// Register sub-resource routes before wildcard routes to avoid conflicts
+	router.Handler(http.MethodGet, apiV1Route+"/teachers/:id/education", 
+		a.requireActivatedUser(http.HandlerFunc(a.getEducationByTeacherHandler)))
+	router.Handler(http.MethodGet, apiV1Route+"/teachers/:id/qualifications", 
+		a.requireActivatedUser(http.HandlerFunc(a.getQualificationsByTeacherHandler)))
+	router.Handler(http.MethodGet, apiV1Route+"/teachers/:id/documents", 
+		a.requireActivatedUser(http.HandlerFunc(a.getDocumentsByTeacherHandler)))
 	router.Handler(http.MethodGet, apiV1Route+"/teachers/:id", 
 		a.requireActivatedUser(http.HandlerFunc(a.getTeacherHandler)))
 	router.Handler(http.MethodDelete, apiV1Route+"/teachers/:id", 

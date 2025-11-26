@@ -14,18 +14,18 @@ import (
 // createTeacherHandler handles POST /v1/teachers
 func (a *app) createTeacherHandler(w http.ResponseWriter, r *http.Request) {
 	var input struct {
-		UserID        int        `json:"user_id,omitempty"`
-		FirstName     string     `json:"first_name"`
-		LastName      string     `json:"last_name"`
-		Gender        string     `json:"gender,omitempty"`
-		DOB           *time.Time `json:"dob,omitempty"`
-		SSN           string     `json:"ssn,omitempty"`
-		MaritalStatus string     `json:"marital_status,omitempty"`
-		Email         string     `json:"email"`
-		Address       string     `json:"address,omitempty"`
-		DistrictID    int        `json:"district_id,omitempty"`
-		Phone         string     `json:"phone,omitempty"`
-		ProfileStatus string     `json:"profile_status,omitempty"`
+		UserID        int    `json:"user_id,omitempty"`
+		FirstName     string `json:"first_name"`
+		LastName      string `json:"last_name"`
+		Gender        string `json:"gender,omitempty"`
+		DOB           string `json:"dob,omitempty"`
+		SSN           string `json:"ssn,omitempty"`
+		MaritalStatus string `json:"marital_status,omitempty"`
+		Email         string `json:"email"`
+		Address       string `json:"address,omitempty"`
+		DistrictID    int    `json:"district_id,omitempty"`
+		Phone         string `json:"phone,omitempty"`
+		ProfileStatus string `json:"profile_status,omitempty"`
 	}
 
 	err := a.readJSON(w, r, &input)
@@ -34,12 +34,23 @@ func (a *app) createTeacherHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Parse DOB string to time.Time if provided
+	var dob *time.Time
+	if input.DOB != "" {
+		parsedDOB, err := time.Parse("2006-01-02", input.DOB)
+		if err != nil {
+			a.badRequestResponse(w, r, fmt.Errorf("invalid date format for dob, expected YYYY-MM-DD"))
+			return
+		}
+		dob = &parsedDOB
+	}
+
 	teacher := &data.Teacher{
 		UserID:        input.UserID,
 		FirstName:     input.FirstName,
 		LastName:      input.LastName,
 		Gender:        input.Gender,
-		DOB:           input.DOB,
+		DOB:           dob,
 		SSN:           input.SSN,
 		MaritalStatus: input.MaritalStatus,
 		Email:         input.Email,

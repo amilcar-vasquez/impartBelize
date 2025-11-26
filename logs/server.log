@@ -243,3 +243,11 @@ time=2025-11-26T10:58:03.827-06:00 level=INFO msg="Server stopped" addr=:4000
 time=2025-11-26T10:58:06.882-06:00 level=INFO msg="Starting server" address=:4000 env=development
 time=2025-11-26T10:59:37.454-06:00 level=INFO msg="Activating user" user_id=2 username=Lee2ed email=lee.14.panti@gmail.com
 time=2025-11-26T11:01:39.358-06:00 level=INFO msg="Activating user" user_id=3 username=lee email=leepanti2018@gmail.com
+time=2025-11-26T12:50:07.567-06:00 level=INFO msg="Shutting down server" signal=interrupt
+time=2025-11-26T12:50:07.567-06:00 level=INFO msg="Completing background tasks" address=:4000
+time=2025-11-26T12:50:07.567-06:00 level=INFO msg="Server stopped" addr=:4000
+time=2025-11-26T12:58:50.092-06:00 level=INFO msg="Starting server" address=:4000 env=development
+time=2025-11-26T13:01:41.519-06:00 level=INFO msg="Shutting down server" signal=interrupt
+time=2025-11-26T13:01:41.520-06:00 level=INFO msg="Completing background tasks" address=:4000
+time=2025-11-26T13:01:41.520-06:00 level=INFO msg="Server stopped" addr=:4000
+time=2025-11-26T13:01:46.036-06:00 level=INFO msg="Starting server" address=:4000 env=development

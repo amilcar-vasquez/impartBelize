@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import '../../services/api_service.dart';
+import '../../services/application_service.dart';
+import '../../widgets/education_form_widget.dart';
+import '../../widgets/document_upload_widget.dart';
 
 class TeacherApplicationScreen extends StatefulWidget {
   const TeacherApplicationScreen({super.key});
@@ -14,6 +17,7 @@ class TeacherApplicationScreen extends StatefulWidget {
 class _TeacherApplicationScreenState extends State<TeacherApplicationScreen> {
   final _formKey = GlobalKey<FormState>();
   final _apiService = ApiService();
+  final _applicationService = ApplicationService();
 
   // Form controllers
   final _firstNameController = TextEditingController();
@@ -29,6 +33,10 @@ class _TeacherApplicationScreenState extends State<TeacherApplicationScreen> {
   int? _selectedDistrictId;
   DateTime? _dateOfBirth;
   bool _isSubmitting = false;
+
+  // Education and Documents
+  List<Map<String, dynamic>> _educationList = [];
+  List<Map<String, dynamic>> _documentList = [];
 
   // Options
   final List<String> _genderOptions = ['Male', 'Female', 'Other'];
@@ -86,12 +94,23 @@ class _TeacherApplicationScreenState extends State<TeacherApplicationScreen> {
       return;
     }
 
+    // Validate that at least one education record is provided
+    if (_educationList.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please add at least one education record'),
+          backgroundColor: Colors.orange,
+        ),
+      );
+      return;
+    }
+
     setState(() {
       _isSubmitting = true;
     });
 
     try {
-      // Format date as YYYY-MM-DD for the API
+      // Step 1: Create teacher profile
       String? dobString;
       if (_dateOfBirth != null) {
         dobString = DateFormat('yyyy-MM-dd').format(_dateOfBirth!);
@@ -103,7 +122,6 @@ class _TeacherApplicationScreenState extends State<TeacherApplicationScreen> {
         'email': _emailController.text.trim(),
       };
 
-      // Only add optional fields if they have values
       if (_phoneController.text.trim().isNotEmpty) {
         teacherData['phone'] = _phoneController.text.trim();
       }
@@ -128,13 +146,45 @@ class _TeacherApplicationScreenState extends State<TeacherApplicationScreen> {
 
       teacherData['profile_status'] = 'pending';
 
-      await _apiService.createTeacher(teacherData);
+      final teacher = await _apiService.createTeacher(teacherData);
+      final teacherId = teacher.id;
+
+      // Step 2: Create education records
+      for (var education in _educationList) {
+        education['teacher_id'] = teacherId;
+        await _applicationService.createEducation(education);
+      }
+
+      // Step 3: Upload documents and create document records
+      for (var document in _documentList) {
+        // Mock upload to Supabase (simulate uploading the file)
+        final mockFilePath = document['file_path'];
+        final fileName = mockFilePath.split('/').last;
+
+        // In production, this would upload the actual file
+        final uploadedUrl = await _applicationService.uploadFileToSupabase(
+          mockFilePath,
+          'teacher-documents',
+          '${teacherId}_$fileName',
+        );
+
+        // Create document record with the uploaded URL
+        final documentData = {
+          'teacher_id': teacherId,
+          'doc_type': document['doc_type'],
+          'file_path': uploadedUrl,
+          if (document['remarks'] != null) 'remarks': document['remarks'],
+        };
+
+        await _applicationService.createDocument(documentData);
+      }
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('License application submitted successfully!'),
             backgroundColor: Colors.green,
+            duration: Duration(seconds: 3),
           ),
         );
 
@@ -151,6 +201,8 @@ class _TeacherApplicationScreenState extends State<TeacherApplicationScreen> {
           _selectedMaritalStatus = null;
           _selectedDistrictId = null;
           _dateOfBirth = null;
+          _educationList = [];
+          _documentList = [];
         });
       }
     } catch (e) {
@@ -420,6 +472,55 @@ class _TeacherApplicationScreenState extends State<TeacherApplicationScreen> {
                         ],
                       ),
                     ),
+                  ),
+                  const SizedBox(height: 32),
+
+                  // Education Section
+                  Text(
+                    'Education',
+                    style: Theme.of(context).textTheme.titleLarge,
+                  ),
+                  const SizedBox(height: 16),
+                  EducationFormWidget(
+                    educationList: _educationList,
+                    onAdd: (education) {
+                      setState(() {
+                        _educationList.add(education);
+                      });
+                    },
+                    onRemove: (index) {
+                      setState(() {
+                        _educationList.removeAt(index);
+                      });
+                    },
+                  ),
+                  const SizedBox(height: 32),
+
+                  // Documents Section
+                  Text(
+                    'Supporting Documents',
+                    style: Theme.of(context).textTheme.titleLarge,
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Upload required documents such as diplomas, certificates, ID, etc.',
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  DocumentUploadWidget(
+                    documentList: _documentList,
+                    onAdd: (document) {
+                      setState(() {
+                        _documentList.add(document);
+                      });
+                    },
+                    onRemove: (index) {
+                      setState(() {
+                        _documentList.removeAt(index);
+                      });
+                    },
                   ),
                   const SizedBox(height: 32),
 
