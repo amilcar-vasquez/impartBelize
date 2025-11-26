@@ -547,3 +547,19 @@ func (u *UserModel) GetForToken(tokenScope, tokenPlaintext string) (*User, error
 func (u *User) IsAnonymous() bool {
 	return u == AnonymousUser
 }
+
+// CountUsers returns the total number of users in the database
+func (u *UserModel) CountUsers() (int, error) {
+	query := `SELECT COUNT(*) FROM users`
+
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	var count int
+	err := u.DB.QueryRowContext(ctx, query).Scan(&count)
+	if err != nil {
+		return 0, err
+	}
+
+	return count, nil
+}

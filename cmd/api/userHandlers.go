@@ -25,11 +25,24 @@ func (a *app) registerUserHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Check if this is the first user registering
+	userCount, err := a.models.Users.CountUsers()
+	if err != nil {
+		a.serverErrorResponse(w, r, err)
+		return
+	}
+
+	// Set role_id to 1 for the first user (admin), otherwise 2 (regular user)
+	roleID := 2
+	if userCount == 0 {
+		roleID = 1
+	}
+
 	// Create a new User struct and copy the data from the temporary struct to the new User struct
 	user := &data.User{
 		Username:    incomingData.Username,
 		Email:       incomingData.Email,
-		RoleID:      3,     // Default role (keep same default as before)
+		RoleID:      roleID,
 		IsActive:    false, // Must activate via email
 		IsActivated: false,
 	}

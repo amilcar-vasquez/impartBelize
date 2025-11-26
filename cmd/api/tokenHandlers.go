@@ -73,7 +73,11 @@ func (a *app) createAuthTokenHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = a.writeJSON(w, http.StatusCreated, envelope{"token": token}, nil)
+	// Return both token and user data for the client
+	err = a.writeJSON(w, http.StatusCreated, envelope{
+		"token": token,
+		"user":  user,
+	}, nil)
 	if err != nil {
 		a.serverErrorResponse(w, r, err)
 	}

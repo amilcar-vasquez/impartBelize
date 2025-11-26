@@ -37,14 +37,18 @@ class _LoginScreenState extends State<LoginScreen> {
     });
 
     try {
-      await _authService.login(
+      final user = await _authService.login(
         _emailController.text.trim(),
         _passwordController.text,
       );
 
       if (mounted) {
-        // Navigate to home screen on success
-        Navigator.of(context).pushReplacementNamed('/home');
+        // Navigate based on user role
+        if (user.isAdmin) {
+          Navigator.of(context).pushReplacementNamed('/admin/home');
+        } else {
+          Navigator.of(context).pushReplacementNamed('/home');
+        }
       }
     } catch (e) {
       setState(() {

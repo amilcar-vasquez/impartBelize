@@ -5,7 +5,10 @@ import 'screens/license_application_screen.dart';
 import 'screens/auth/login_screen.dart';
 import 'screens/auth/activation_screen.dart';
 import 'screens/settings_screen.dart';
+import 'screens/admin/admin_home_screen.dart';
 import 'services/auth_service.dart';
+import 'widgets/admin_route_guard.dart';
+import 'models/user.dart';
 
 void main() {
   runApp(const ImpartBelizeApp());
@@ -55,6 +58,8 @@ class ImpartBelizeApp extends StatelessWidget {
         '/register': (context) => const RegisterScreen(),
         '/activate': (context) => const ActivationScreen(),
         '/home': (context) => const HomeScreen(),
+        '/admin/home': (context) =>
+            const AdminRouteGuard(child: AdminHomeScreen()),
       },
     );
   }
@@ -66,8 +71,8 @@ class AuthWrapper extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<bool>(
-      future: AuthService().isAuthenticated(),
+    return FutureBuilder<User?>(
+      future: AuthService().getUser(),
       builder: (context, snapshot) {
         // Show loading indicator while checking auth status
         if (snapshot.connectionState == ConnectionState.waiting) {
@@ -76,9 +81,16 @@ class AuthWrapper extends StatelessWidget {
           );
         }
 
-        // Navigate based on authentication status
-        if (snapshot.data == true) {
-          return const HomeScreen();
+        final user = snapshot.data;
+
+        // Navigate based on authentication status and role
+        if (user != null) {
+          // Redirect based on user role
+          if (user.isAdmin) {
+            return const AdminRouteGuard(child: AdminHomeScreen());
+          } else {
+            return const HomeScreen();
+          }
         } else {
           return const LoginScreen();
         }
