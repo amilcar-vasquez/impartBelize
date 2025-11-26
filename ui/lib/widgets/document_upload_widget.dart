@@ -24,7 +24,6 @@ class _DocumentUploadWidgetState extends State<DocumentUploadWidget> {
   String? _selectedDocType;
   File? _selectedFile;
   String? _selectedFileName;
-  bool _isUploading = false;
 
   final List<String> _documentTypes = [
     'Birth Certificate',

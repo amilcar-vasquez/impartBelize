@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import '../../services/auth_service.dart';
 import '../../services/api_service.dart';
 import '../../models/user.dart';
-import '../../models/teacher.dart';
 
 class TeacherHomeScreen extends StatefulWidget {
   final VoidCallback? onNavigateToApplication;
@@ -17,7 +16,6 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen> {
   final AuthService _authService = AuthService();
   final ApiService _apiService = ApiService();
   User? _currentUser;
-  Teacher? _teacherProfile;
   bool _isLoading = true;
   bool _hasTeacherProfile = false;
 
@@ -39,7 +37,6 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen> {
         final teacher = await _apiService.fetchTeacherByUserId(user.userId);
         setState(() {
           _currentUser = user;
-          _teacherProfile = teacher;
           _hasTeacherProfile = teacher != null;
           _isLoading = false;
         });
