@@ -78,6 +78,8 @@ flutter run -d <emulator-id>
 #flutter run -d emulator-5554
 ```
 
+supabase_flutter package uses native dependencies so it takes a while to download. you can check the progress with the `--verbose` flag
+
 ## How to use
 
 The very first user that registers using the mobile app is given the admin role. everyone else is given the user role by default and can only be changed by the admin account.

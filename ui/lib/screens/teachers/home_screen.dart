@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import '../../services/auth_service.dart';
+import '../../services/api_service.dart';
 import '../../models/user.dart';
+import '../../models/teacher.dart';
 
 class TeacherHomeScreen extends StatefulWidget {
   final VoidCallback? onNavigateToApplication;
@@ -13,10 +15,11 @@ class TeacherHomeScreen extends StatefulWidget {
 
 class _TeacherHomeScreenState extends State<TeacherHomeScreen> {
   final AuthService _authService = AuthService();
+  final ApiService _apiService = ApiService();
   User? _currentUser;
+  Teacher? _teacherProfile;
   bool _isLoading = true;
-  bool _hasTeacherProfile =
-      false; // TODO: Check from API if teacher record exists
+  bool _hasTeacherProfile = false;
 
   @override
   void initState() {
@@ -25,14 +28,32 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen> {
   }
 
   Future<void> _loadUserData() async {
-    final user = await _authService.getUser();
     setState(() {
-      _currentUser = user;
-      _isLoading = false;
-      // TODO: Check if teacher profile exists via API call
-      // For now, defaulting to false
-      _hasTeacherProfile = false;
+      _isLoading = true;
     });
+
+    try {
+      final user = await _authService.getUser();
+      if (user != null) {
+        // Check if teacher profile exists
+        final teacher = await _apiService.fetchTeacherByUserId(user.userId);
+        setState(() {
+          _currentUser = user;
+          _teacherProfile = teacher;
+          _hasTeacherProfile = teacher != null;
+          _isLoading = false;
+        });
+      } else {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      print('Error loading user data: $e');
+      setState(() {
+        _isLoading = false;
+      });
+    }
   }
 
   @override

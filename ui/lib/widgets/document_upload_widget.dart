@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:file_picker/file_picker.dart';
+import 'dart:io';
 
 class DocumentUploadWidget extends StatefulWidget {
   final Function(Map<String, dynamic>) onAdd;
@@ -20,7 +22,8 @@ class _DocumentUploadWidgetState extends State<DocumentUploadWidget> {
   final _docTypeController = TextEditingController();
   final _remarksController = TextEditingController();
   String? _selectedDocType;
-  String? _mockFilePath;
+  File? _selectedFile;
+  String? _selectedFileName;
   bool _isUploading = false;
 
   final List<String> _documentTypes = [
@@ -41,33 +44,63 @@ class _DocumentUploadWidgetState extends State<DocumentUploadWidget> {
     _remarksController.clear();
     setState(() {
       _selectedDocType = null;
-      _mockFilePath = null;
+      _selectedFile = null;
+      _selectedFileName = null;
     });
   }
 
-  // Mock file picker - simulates selecting a file
-  Future<void> _mockPickFile() async {
-    setState(() {
-      _isUploading = true;
-    });
+  // Real file picker
+  Future<void> _pickFile() async {
+    try {
+      FilePickerResult? result = await FilePicker.platform.pickFiles(
+        type: FileType.custom,
+        allowedExtensions: ['pdf', 'jpg', 'jpeg', 'png', 'doc', 'docx'],
+        allowMultiple: false,
+      );
 
-    // Simulate file selection delay
-    await Future.delayed(const Duration(milliseconds: 500));
+      if (result != null && result.files.single.path != null) {
+        final file = File(result.files.single.path!);
+        final fileName = result.files.single.name;
 
-    // Generate a mock file path
-    final fileName = 'document_${DateTime.now().millisecondsSinceEpoch}.pdf';
-    setState(() {
-      _mockFilePath = '/mock/path/to/$fileName';
-      _isUploading = false;
-    });
+        // Check file size (limit to 10MB)
+        final fileSize = await file.length();
+        if (fileSize > 10 * 1024 * 1024) {
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('File size must be less than 10MB'),
+                backgroundColor: Colors.red,
+              ),
+            );
+          }
+          return;
+        }
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('File selected: $fileName'),
-        backgroundColor: Colors.green,
-        duration: const Duration(seconds: 2),
-      ),
-    );
+        setState(() {
+          _selectedFile = file;
+          _selectedFileName = fileName;
+        });
+
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('File selected: $fileName'),
+              backgroundColor: Colors.green,
+              duration: const Duration(seconds: 2),
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error selecting file: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
   }
 
   void _addDocument() {
@@ -85,7 +118,7 @@ class _DocumentUploadWidgetState extends State<DocumentUploadWidget> {
       return;
     }
 
-    if (_mockFilePath == null) {
+    if (_selectedFile == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Please select a file'),
@@ -95,9 +128,11 @@ class _DocumentUploadWidgetState extends State<DocumentUploadWidget> {
       return;
     }
 
+    // Store the file object and metadata for upload later
     final document = {
       'doc_type': docType,
-      'file_path': _mockFilePath!, // This will be the Supabase URL after upload
+      'file': _selectedFile!, // Actual File object for upload
+      'file_name': _selectedFileName!,
       if (_remarksController.text.trim().isNotEmpty)
         'remarks': _remarksController.text.trim(),
     };
@@ -107,7 +142,7 @@ class _DocumentUploadWidgetState extends State<DocumentUploadWidget> {
 
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
-        content: Text('Document added'),
+        content: Text('Document added to queue'),
         backgroundColor: Colors.green,
         duration: Duration(seconds: 1),
       ),
@@ -146,7 +181,10 @@ class _DocumentUploadWidgetState extends State<DocumentUploadWidget> {
           ...widget.documentList.asMap().entries.map((entry) {
             final index = entry.key;
             final doc = entry.value;
-            final fileName = doc['file_path']?.split('/').last ?? 'Unknown';
+            final fileName =
+                doc['file_name'] ??
+                doc['file_path']?.split('/').last ??
+                'Unknown';
 
             return Card(
               margin: const EdgeInsets.only(bottom: 8),
@@ -242,18 +280,13 @@ class _DocumentUploadWidgetState extends State<DocumentUploadWidget> {
 
                 // File selection button
                 OutlinedButton.icon(
-                  onPressed: _isUploading ? null : _mockPickFile,
-                  icon: _isUploading
-                      ? const SizedBox(
-                          width: 16,
-                          height: 16,
-                          child: CircularProgressIndicator(strokeWidth: 2),
-                        )
-                      : const Icon(Icons.attach_file),
+                  onPressed: _pickFile,
+                  icon: const Icon(Icons.attach_file),
                   label: Text(
-                    _mockFilePath == null
-                        ? 'Select File'
-                        : 'File Selected: ${_mockFilePath!.split('/').last}',
+                    _selectedFile == null
+                        ? 'Select File (PDF, Image, DOC)'
+                        : 'File Selected: $_selectedFileName',
+                    overflow: TextOverflow.ellipsis,
                   ),
                   style: OutlinedButton.styleFrom(
                     padding: const EdgeInsets.all(16),

@@ -226,24 +226,20 @@ class ApplicationService {
     }
   }
 
-  // ==================== Mock File Upload ====================
+  // ==================== File Upload ====================
 
-  /// Mock function to simulate uploading a file to Supabase
-  /// In production, this would use the Supabase Storage API
+  /// Upload a file to Supabase Storage
+  /// This is now handled by SupabaseStorageService
+  /// Kept here for backward compatibility
   Future<String> uploadFileToSupabase(
     String filePath,
     String bucket,
     String fileName,
   ) async {
-    // Simulate upload delay
-    await Future.delayed(const Duration(seconds: 2));
-
-    // Return a mock URL that would be returned by Supabase
-    // In production, this would be:
-    // final supabase = Supabase.instance.client;
-    // final response = await supabase.storage.from(bucket).upload(fileName, File(filePath));
-    // return supabase.storage.from(bucket).getPublicUrl(fileName);
-
-    return 'https://mock-supabase-url.com/storage/v1/object/public/$bucket/$fileName';
+    // Note: This method is deprecated
+    // Use SupabaseStorageService.uploadFile() directly instead
+    throw UnimplementedError(
+      'Use SupabaseStorageService.uploadTeacherDocument() instead',
+    );
   }
 }

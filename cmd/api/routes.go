@@ -72,17 +72,21 @@ func (a *app) routes() http.Handler {
 		a.requireActivatedUser(http.HandlerFunc(a.listTeachersHandler)))
 	router.Handler(http.MethodPost, apiV1Route+"/teachers", 
 		a.requireActivatedUser(http.HandlerFunc(a.createTeacherHandler)))
-	// Register sub-resource routes before wildcard routes to avoid conflicts
+	// Register literal paths and sub-resources before wildcard :id to avoid conflicts
+	// These sub-resource routes must come before /teachers/:id
 	router.Handler(http.MethodGet, apiV1Route+"/teachers/:id/education", 
-		a.requireActivatedUser(http.HandlerFunc(a.getEducationByTeacherHandler)))
+	a.requireActivatedUser(http.HandlerFunc(a.getEducationByTeacherHandler)))
 	router.Handler(http.MethodGet, apiV1Route+"/teachers/:id/qualifications", 
-		a.requireActivatedUser(http.HandlerFunc(a.getQualificationsByTeacherHandler)))
+	a.requireActivatedUser(http.HandlerFunc(a.getQualificationsByTeacherHandler)))
 	router.Handler(http.MethodGet, apiV1Route+"/teachers/:id/documents", 
-		a.requireActivatedUser(http.HandlerFunc(a.getDocumentsByTeacherHandler)))
-	router.Handler(http.MethodGet, apiV1Route+"/teachers/:id", 
-		a.requireActivatedUser(http.HandlerFunc(a.getTeacherHandler)))
+	a.requireActivatedUser(http.HandlerFunc(a.getDocumentsByTeacherHandler)))
+	// Wildcard routes must come last
 	router.Handler(http.MethodDelete, apiV1Route+"/teachers/:id", 
-		a.requireAnyRole([]string{"Admin", "CEO", "TSC"}, http.HandlerFunc(a.deleteTeacherHandler)))
+	a.requireAnyRole([]string{"Admin", "CEO", "TSC"}, http.HandlerFunc(a.deleteTeacherHandler)))
+	router.Handler(http.MethodGet, apiV1Route+"/teachers/:id", 
+	a.requireActivatedUser(http.HandlerFunc(a.getTeacherHandler)))
+	router.Handler(http.MethodGet, apiV1Route+"/teacher/user/:id", 
+		a.requireActivatedUser(http.HandlerFunc(a.getTeacherByUserIDHandler)))
 
 	// Education routes - Teachers can manage their own, Admin/CEO/TSC/DEC can manage all (must be activated)
 	router.Handler(http.MethodPost, apiV1Route+"/education", 

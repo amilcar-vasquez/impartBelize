@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
+import 'dart:io';
 import '../../services/api_service.dart';
 import '../../services/application_service.dart';
+import '../../services/auth_service.dart';
+import '../../services/supabase_storage_service.dart';
 import '../../widgets/education_form_widget.dart';
 import '../../widgets/document_upload_widget.dart';
 
@@ -18,6 +21,8 @@ class _TeacherApplicationScreenState extends State<TeacherApplicationScreen> {
   final _formKey = GlobalKey<FormState>();
   final _apiService = ApiService();
   final _applicationService = ApplicationService();
+  final _authService = AuthService();
+  final _storageService = SupabaseStorageService();
 
   // Form controllers
   final _firstNameController = TextEditingController();
@@ -111,12 +116,19 @@ class _TeacherApplicationScreenState extends State<TeacherApplicationScreen> {
 
     try {
       // Step 1: Create teacher profile
+      // Get current user ID
+      final currentUser = await _authService.getUser();
+      if (currentUser == null) {
+        throw Exception('User not logged in');
+      }
+
       String? dobString;
       if (_dateOfBirth != null) {
         dobString = DateFormat('yyyy-MM-dd').format(_dateOfBirth!);
       }
 
       final teacherData = <String, dynamic>{
+        'user_id': currentUser.userId,
         'first_name': _firstNameController.text.trim(),
         'last_name': _lastNameController.text.trim(),
         'email': _emailController.text.trim(),
@@ -157,28 +169,27 @@ class _TeacherApplicationScreenState extends State<TeacherApplicationScreen> {
 
       // Step 3: Upload documents and create document records
       for (var document in _documentList) {
-        // Mock upload to Supabase (simulate uploading the file)
-        final mockFilePath = document['file_path'];
-        final fileName = mockFilePath.split('/').last;
+        // Get the actual File object
+        final File file = document['file'];
+        final String docType = document['doc_type'];
 
-        // In production, this would upload the actual file
-        final uploadedUrl = await _applicationService.uploadFileToSupabase(
-          mockFilePath,
-          'teacher-documents',
-          '${teacherId}_$fileName',
+        // Upload to Supabase Storage
+        final uploadedUrl = await _storageService.uploadTeacherDocument(
+          file: file,
+          teacherId: teacherId,
+          documentType: docType,
         );
 
         // Create document record with the uploaded URL
         final documentData = {
           'teacher_id': teacherId,
-          'doc_type': document['doc_type'],
+          'doc_type': docType,
           'file_path': uploadedUrl,
           if (document['remarks'] != null) 'remarks': document['remarks'],
         };
 
         await _applicationService.createDocument(documentData);
       }
-
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(

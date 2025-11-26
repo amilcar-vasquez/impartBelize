@@ -251,3 +251,32 @@ time=2025-11-26T13:01:41.519-06:00 level=INFO msg="Shutting down server" signal=
 time=2025-11-26T13:01:41.520-06:00 level=INFO msg="Completing background tasks" address=:4000
 time=2025-11-26T13:01:41.520-06:00 level=INFO msg="Server stopped" addr=:4000
 time=2025-11-26T13:01:46.036-06:00 level=INFO msg="Starting server" address=:4000 env=development
+time=2025-11-26T13:25:36.582-06:00 level=INFO msg="Shutting down server" signal=interrupt
+time=2025-11-26T13:25:36.582-06:00 level=INFO msg="Completing background tasks" address=:4000
+time=2025-11-26T13:25:36.582-06:00 level=INFO msg="Server stopped" addr=:4000
+time=2025-11-26T13:29:20.333-06:00 level=INFO msg="Starting server" address=:4000 env=development
+time=2025-11-26T13:29:21.996-06:00 level=INFO msg="Shutting down server" signal=interrupt
+time=2025-11-26T13:29:21.997-06:00 level=INFO msg="Completing background tasks" address=:4000
+time=2025-11-26T13:29:21.997-06:00 level=INFO msg="Server stopped" addr=:4000
+time=2025-11-26T13:32:18.103-06:00 level=INFO msg="Starting server" address=:4000 env=development
+time=2025-11-26T13:32:24.455-06:00 level=INFO msg="Shutting down server" signal=interrupt
+time=2025-11-26T13:32:24.455-06:00 level=INFO msg="Completing background tasks" address=:4000
+time=2025-11-26T13:32:24.455-06:00 level=INFO msg="Server stopped" addr=:4000
+time=2025-11-26T13:35:52.514-06:00 level=INFO msg="Starting server" address=:4000 env=development
+time=2025-11-26T13:35:54.653-06:00 level=INFO msg="Shutting down server" signal=interrupt
+time=2025-11-26T13:35:54.654-06:00 level=INFO msg="Completing background tasks" address=:4000
+time=2025-11-26T13:35:54.654-06:00 level=INFO msg="Server stopped" addr=:4000
+time=2025-11-26T13:35:59.895-06:00 level=INFO msg="Starting server" address=:4000 env=development
+time=2025-11-26T14:34:03.722-06:00 level=ERROR msg="failed to insert teacher" error="pq: duplicate key value violates unique constraint \"teachers_user_id_key\""
+time=2025-11-26T14:34:03.723-06:00 level=ERROR msg="pq: duplicate key value violates unique constraint \"teachers_user_id_key\"" method=POST uri=/v1/teachers
+time=2025-11-26T14:42:24.034-06:00 level=ERROR msg="failed to insert teacher" error="pq: duplicate key value violates unique constraint \"teachers_user_id_key\""
+time=2025-11-26T14:42:24.034-06:00 level=ERROR msg="pq: duplicate key value violates unique constraint \"teachers_user_id_key\"" method=POST uri=/v1/teachers
+time=2025-11-26T14:48:06.430-06:00 level=ERROR msg="sql: Scan error on column index 6, name \"ssn\": converting NULL to string is unsupported" method=GET uri=/v1/teacher/user/3
+time=2025-11-26T14:48:08.342-06:00 level=ERROR msg="sql: Scan error on column index 6, name \"ssn\": converting NULL to string is unsupported" method=GET uri=/v1/teacher/user/3
+time=2025-11-26T14:48:09.404-06:00 level=ERROR msg="sql: Scan error on column index 6, name \"ssn\": converting NULL to string is unsupported" method=GET uri=/v1/teacher/user/3
+time=2025-11-26T14:48:12.583-06:00 level=ERROR msg="sql: Scan error on column index 6, name \"ssn\": converting NULL to string is unsupported" method=GET uri=/v1/teacher/user/3
+time=2025-11-26T14:48:36.504-06:00 level=ERROR msg="sql: Scan error on column index 6, name \"ssn\": converting NULL to string is unsupported" method=GET uri=/v1/teacher/user/3
+time=2025-11-26T14:48:38.469-06:00 level=ERROR msg="sql: Scan error on column index 6, name \"ssn\": converting NULL to string is unsupported" method=GET uri=/v1/teacher/user/3
+time=2025-11-26T14:48:59.045-06:00 level=ERROR msg="sql: Scan error on column index 6, name \"ssn\": converting NULL to string is unsupported" method=GET uri=/v1/teacher/user/3
+time=2025-11-26T14:49:30.208-06:00 level=ERROR msg="sql: Scan error on column index 6, name \"ssn\": converting NULL to string is unsupported" method=GET uri=/v1/teacher/user/3
+time=2025-11-26T14:50:31.355-06:00 level=ERROR msg="sql: Scan error on column index 6, name \"ssn\": converting NULL to string is unsupported" method=GET uri=/v1/teacher/user/3

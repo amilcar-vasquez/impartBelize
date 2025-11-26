@@ -129,4 +129,31 @@ class ApiService {
       throw Exception('Error deleting teacher: $e');
     }
   }
+
+  /// Fetches teacher by user ID, returns null if not found
+  Future<Teacher?> fetchTeacherByUserId(int userId) async {
+    try {
+      final headers = await _authService.getAuthHeaders();
+      final response = await http.get(
+        Uri.parse('$baseUrl/teacher/user/$userId'),
+        headers: headers,
+      );
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> data = json.decode(response.body);
+        return Teacher.fromJson(data['teacher']);
+      } else if (response.statusCode == 404) {
+        // Teacher profile doesn't exist yet
+        return null;
+      } else {
+        throw Exception('Failed to load teacher: ${response.statusCode}');
+      }
+    } catch (e) {
+      // If it's a 404 or connection error, return null
+      if (e.toString().contains('404')) {
+        return null;
+      }
+      throw Exception('Error fetching teacher by user ID: $e');
+    }
+  }
 }

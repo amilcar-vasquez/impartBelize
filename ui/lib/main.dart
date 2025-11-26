@@ -5,10 +5,17 @@ import 'screens/auth/activation_screen.dart';
 import 'screens/teachers/teacher_layout.dart';
 import 'screens/admin/admin_layout.dart';
 import 'services/auth_service.dart';
+import 'services/supabase_storage_service.dart';
 import 'widgets/admin_route_guard.dart';
 import 'models/user.dart';
 
-void main() {
+void main() async {
+  // Ensure Flutter binding is initialized
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialize Supabase
+  await SupabaseStorageService.initialize();
+
   runApp(const ImpartBelizeApp());
 }
 
