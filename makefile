@@ -1,4 +1,6 @@
 include .envrc
+# export the environment variables from .envrc file so scripts can use them
+export
 
 # run/api: run the api server
 .PHONY: run/api
@@ -51,6 +53,7 @@ test:
 	@echo "Tests completed."
 
 ## db/setup: run the setup script to create the database
+## must have the environment variables set in .envrc first
 .PHONY: db/setup
 db/setup:
 	@echo "Setting up the database..."

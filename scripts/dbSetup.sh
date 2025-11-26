@@ -5,12 +5,17 @@
 
 set -e  # Exit on any error
 
-# Configuration
-DB_NAME="impart"
-DB_USER="impart"
-DB_PASSWORD="ImpartBelize2025"
-DB_HOST="localhost"
-DB_PORT="5432"
+# Configuration - Check for required environment variables
+if [ -z "$DB_NAME" ] || [ -z "$DB_USER" ] || [ -z "$DB_PASSWORD" ] || [ -z "$DB_HOST" ] || [ -z "$DB_PORT" ]; then
+    echo -e "\033[0;31m[ERROR]\033[0m Missing required environment variables"
+    echo "Please set the following environment variables in the .envrc file:"
+    echo "  DB_NAME"
+    echo "  DB_USER"
+    echo "  DB_PASSWORD"
+    echo "  DB_HOST"
+    echo "  DB_PORT"
+    exit 1
+fi
 
 # Colors for output
 RED='\033[0;31m'
@@ -34,6 +39,10 @@ print_error() {
 # Check if PostgreSQL is running
 check_postgres() {
     print_status "Checking if PostgreSQL is running..."
+    if ! command -v pg_isready >/dev/null 2>&1; then
+        print_warning "pg_isready command not found, skipping PostgreSQL check"
+        return 0
+    fi
     if ! pg_isready -h "$DB_HOST" -p "$DB_PORT" >/dev/null 2>&1; then
         print_error "PostgreSQL is not running or not accessible at $DB_HOST:$DB_PORT"
         print_error "Please start PostgreSQL service first:"
@@ -116,29 +125,6 @@ test_connection() {
     fi
 }
 
-# Generate environment file
-generate_env_file() {
-    print_status "Generating environment configuration..."
-    
-    # Create .envrc file for the project
-    cat > .envrc << EOF
-# Belize Police Department - Nforce Academy Database Configuration
-export POLICE_TRAINING_DB_DSN="postgres://$DB_USER:$DB_PASSWORD@$DB_HOST:$DB_PORT/$DB_NAME?sslmode=disable"
-
-# Individual components (for reference)
-export DB_HOST="$DB_HOST"
-export DB_PORT="$DB_PORT"
-export DB_NAME="$DB_NAME"
-export DB_USER="$DB_USER"
-export DB_PASSWORD="$DB_PASSWORD"
-EOF
-
-    print_status "Created .envrc file with database configuration ✓"
-    print_warning "Make sure to source the .envrc file or install direnv:"
-    print_warning "  source .envrc"
-    print_warning "  # or install direnv and run: direnv allow"
-}
-
 # Main execution
 main() {
     echo "================================================"
@@ -151,8 +137,7 @@ main() {
     create_database
     grant_privileges
     test_connection
-    generate_env_file
-    
+
     echo
     echo "================================================"
     print_status "Database setup completed successfully!"
