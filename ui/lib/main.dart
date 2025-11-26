@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:ui/screens/auth/register_screen.dart';
-import 'screens/teachers_screen.dart';
-import 'screens/license_application_screen.dart';
 import 'screens/auth/login_screen.dart';
 import 'screens/auth/activation_screen.dart';
-import 'screens/settings_screen.dart';
-import 'screens/admin/admin_home_screen.dart';
+import 'screens/teachers/teacher_layout.dart';
+import 'screens/admin/admin_layout.dart';
 import 'services/auth_service.dart';
 import 'widgets/admin_route_guard.dart';
 import 'models/user.dart';
@@ -57,7 +55,7 @@ class ImpartBelizeApp extends StatelessWidget {
         '/login': (context) => const LoginScreen(),
         '/register': (context) => const RegisterScreen(),
         '/activate': (context) => const ActivationScreen(),
-        '/home': (context) => const HomeScreen(),
+        '/home': (context) => const TeacherLayout(),
         '/admin/home': (context) =>
             const AdminRouteGuard(child: AdminHomeScreen()),
       },
@@ -89,155 +87,12 @@ class AuthWrapper extends StatelessWidget {
           if (user.isAdmin) {
             return const AdminRouteGuard(child: AdminHomeScreen());
           } else {
-            return const HomeScreen();
+            return const TeacherLayout();
           }
         } else {
           return const LoginScreen();
         }
       },
-    );
-  }
-}
-
-class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
-
-  @override
-  State<HomeScreen> createState() => _HomeScreenState();
-}
-
-class _HomeScreenState extends State<HomeScreen> {
-  int _selectedIndex = 0;
-
-  static const List<Widget> _screens = [
-    TeachersScreen(),
-    LicenseApplicationScreen(),
-    PlaceholderScreen(title: 'Districts'),
-    PlaceholderScreen(title: 'Institutions'),
-    SettingsScreen(),
-  ];
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Row(
-        children: [
-          if (MediaQuery.of(context).size.width >= 640)
-            NavigationRail(
-              selectedIndex: _selectedIndex,
-              onDestinationSelected: (index) {
-                setState(() {
-                  _selectedIndex = index;
-                });
-              },
-              labelType: NavigationRailLabelType.all,
-              destinations: const [
-                NavigationRailDestination(
-                  icon: Icon(Icons.people_outline),
-                  selectedIcon: Icon(Icons.people),
-                  label: Text('Teachers'),
-                ),
-                NavigationRailDestination(
-                  icon: Icon(Icons.description_outlined),
-                  selectedIcon: Icon(Icons.description),
-                  label: Text('Apply'),
-                ),
-                NavigationRailDestination(
-                  icon: Icon(Icons.location_city_outlined),
-                  selectedIcon: Icon(Icons.location_city),
-                  label: Text('Districts'),
-                ),
-                NavigationRailDestination(
-                  icon: Icon(Icons.school_outlined),
-                  selectedIcon: Icon(Icons.school),
-                  label: Text('Institutions'),
-                ),
-                NavigationRailDestination(
-                  icon: Icon(Icons.settings_outlined),
-                  selectedIcon: Icon(Icons.settings),
-                  label: Text('Settings'),
-                ),
-              ],
-            ),
-          if (MediaQuery.of(context).size.width >= 640)
-            const VerticalDivider(thickness: 1, width: 1),
-          Expanded(child: _screens[_selectedIndex]),
-        ],
-      ),
-      bottomNavigationBar: MediaQuery.of(context).size.width < 640
-          ? NavigationBar(
-              selectedIndex: _selectedIndex,
-              onDestinationSelected: (index) {
-                setState(() {
-                  _selectedIndex = index;
-                });
-              },
-              destinations: const [
-                NavigationDestination(
-                  icon: Icon(Icons.people_outline),
-                  selectedIcon: Icon(Icons.people),
-                  label: 'Teachers',
-                ),
-                NavigationDestination(
-                  icon: Icon(Icons.description_outlined),
-                  selectedIcon: Icon(Icons.description),
-                  label: 'Apply',
-                ),
-                NavigationDestination(
-                  icon: Icon(Icons.location_city_outlined),
-                  selectedIcon: Icon(Icons.location_city),
-                  label: 'Districts',
-                ),
-                NavigationDestination(
-                  icon: Icon(Icons.school_outlined),
-                  selectedIcon: Icon(Icons.school),
-                  label: 'Institutions',
-                ),
-                NavigationDestination(
-                  icon: Icon(Icons.settings_outlined),
-                  selectedIcon: Icon(Icons.settings),
-                  label: 'Settings',
-                ),
-              ],
-            )
-          : null,
-    );
-  }
-}
-
-class PlaceholderScreen extends StatelessWidget {
-  final String title;
-
-  const PlaceholderScreen({super.key, required this.title});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text(title)),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.construction,
-              size: 64,
-              color: Theme.of(context).colorScheme.onSurfaceVariant,
-            ),
-            const SizedBox(height: 16),
-            Text(
-              '$title screen',
-              style: Theme.of(context).textTheme.headlineSmall,
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Coming soon...',
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: Theme.of(context).colorScheme.onSurfaceVariant,
-              ),
-            ),
-          ],
-        ),
-      ),
     );
   }
 }

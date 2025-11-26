@@ -1,6 +1,14 @@
 import 'package:flutter/material.dart';
 import '../../services/auth_service.dart';
 import '../../models/user.dart';
+import 'dashboard_screen.dart';
+import 'users_screen.dart';
+import 'teachers_screen.dart';
+import 'applications_screen.dart';
+import 'districts_screen.dart';
+import 'institutions_screen.dart';
+import 'notifications_screen.dart';
+import 'settings_screen.dart';
 
 class AdminHomeScreen extends StatefulWidget {
   const AdminHomeScreen({super.key});
@@ -69,41 +77,49 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
       icon: Icons.dashboard,
       label: 'Dashboard',
       selectedIcon: Icons.dashboard_rounded,
+      screen: AdminDashboardScreen(),
     ),
     _AdminSection(
       icon: Icons.people_outline,
       label: 'Users',
       selectedIcon: Icons.people,
+      screen: AdminUsersScreen(),
     ),
     _AdminSection(
       icon: Icons.person_outline,
       label: 'Teachers',
       selectedIcon: Icons.person,
+      screen: AdminTeachersScreen(),
     ),
     _AdminSection(
       icon: Icons.description_outlined,
       label: 'Applications',
       selectedIcon: Icons.description,
+      screen: AdminApplicationsScreen(),
     ),
     _AdminSection(
       icon: Icons.location_city_outlined,
       label: 'Districts',
       selectedIcon: Icons.location_city,
+      screen: AdminDistrictsScreen(),
     ),
     _AdminSection(
       icon: Icons.school_outlined,
       label: 'Institutions',
       selectedIcon: Icons.school,
+      screen: AdminInstitutionsScreen(),
     ),
     _AdminSection(
       icon: Icons.notifications_outlined,
       label: 'Notifications',
       selectedIcon: Icons.notifications,
+      screen: AdminNotificationsScreen(),
     ),
     _AdminSection(
       icon: Icons.settings_outlined,
       label: 'Settings',
       selectedIcon: Icons.settings,
+      screen: AdminSettingsScreen(),
     ),
   ];
 
@@ -116,8 +132,21 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
     final screenWidth = MediaQuery.of(context).size.width;
     final isDesktop = screenWidth >= 1024;
     final isTablet = screenWidth >= 640 && screenWidth < 1024;
+    final isMobile = !isDesktop && !isTablet;
 
     return Scaffold(
+      appBar: isMobile
+          ? AppBar(
+              title: Text(_sections[_selectedIndex].label),
+              actions: [
+                IconButton(
+                  icon: const Icon(Icons.logout),
+                  onPressed: _handleLogout,
+                  tooltip: 'Logout',
+                ),
+              ],
+            )
+          : null,
       body: Row(
         children: [
           // Sidebar navigation (desktop and tablet)
@@ -192,12 +221,12 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
             const VerticalDivider(thickness: 1, width: 1),
 
           // Main content area
-          Expanded(child: _buildContent(_sections[_selectedIndex].label)),
+          Expanded(child: _sections[_selectedIndex].screen),
         ],
       ),
 
       // Bottom navigation (mobile)
-      bottomNavigationBar: (!isDesktop && !isTablet)
+      bottomNavigationBar: isMobile
           ? NavigationBar(
               selectedIndex: _selectedIndex,
               onDestinationSelected: (index) {
@@ -219,211 +248,18 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
           : null,
     );
   }
-
-  Widget _buildContent(String sectionLabel) {
-    switch (sectionLabel) {
-      case 'Dashboard':
-        return _buildDashboard();
-      case 'Users':
-        return _buildPlaceholder('Users Management', Icons.people);
-      case 'Teachers':
-        return _buildPlaceholder('Teachers Management', Icons.person);
-      case 'Applications':
-        return _buildPlaceholder('License Applications', Icons.description);
-      case 'Districts':
-        return _buildPlaceholder('Districts Management', Icons.location_city);
-      case 'Institutions':
-        return _buildPlaceholder('Institutions Management', Icons.school);
-      case 'Notifications':
-        return _buildPlaceholder('Notifications', Icons.notifications);
-      case 'Settings':
-        return _buildPlaceholder('System Settings', Icons.settings);
-      default:
-        return _buildDashboard();
-    }
-  }
-
-  Widget _buildDashboard() {
-    return CustomScrollView(
-      slivers: [
-        SliverAppBar(
-          floating: true,
-          title: const Text('Admin Dashboard'),
-          actions: [
-            IconButton(
-              icon: const Icon(Icons.notifications_outlined),
-              onPressed: () {
-                // Handle notifications
-              },
-            ),
-            IconButton(
-              icon: const Icon(Icons.logout),
-              onPressed: _handleLogout,
-            ),
-            const SizedBox(width: 8),
-          ],
-        ),
-        SliverPadding(
-          padding: const EdgeInsets.all(16),
-          sliver: SliverToBoxAdapter(
-            child: Wrap(
-              spacing: 16,
-              runSpacing: 16,
-              children: [
-                _StatCard(
-                  title: 'Total Users',
-                  value: '0',
-                  icon: Icons.people,
-                  color: Colors.blue,
-                ),
-                _StatCard(
-                  title: 'Total Teachers',
-                  value: '0',
-                  icon: Icons.person,
-                  color: Colors.green,
-                ),
-                _StatCard(
-                  title: 'Pending Applications',
-                  value: '0',
-                  icon: Icons.pending_actions,
-                  color: Colors.orange,
-                ),
-                _StatCard(
-                  title: 'Active Institutions',
-                  value: '0',
-                  icon: Icons.school,
-                  color: Colors.purple,
-                ),
-              ],
-            ),
-          ),
-        ),
-        SliverPadding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          sliver: SliverToBoxAdapter(
-            child: Text(
-              'Recent Activity',
-              style: Theme.of(context).textTheme.titleLarge,
-            ),
-          ),
-        ),
-        SliverPadding(
-          padding: const EdgeInsets.all(16),
-          sliver: SliverToBoxAdapter(
-            child: Card(
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  children: [
-                    ListTile(
-                      leading: const CircleAvatar(
-                        child: Icon(Icons.info_outline),
-                      ),
-                      title: const Text('No recent activity'),
-                      subtitle: const Text('Activity will appear here'),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildPlaceholder(String title, IconData icon) {
-    return Scaffold(
-      appBar: AppBar(title: Text(title)),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              icon,
-              size: 64,
-              color: Theme.of(context).colorScheme.onSurfaceVariant,
-            ),
-            const SizedBox(height: 16),
-            Text(title, style: Theme.of(context).textTheme.headlineSmall),
-            const SizedBox(height: 8),
-            Text(
-              'Coming soon...',
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: Theme.of(context).colorScheme.onSurfaceVariant,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
 }
 
 class _AdminSection {
   final IconData icon;
   final IconData selectedIcon;
   final String label;
+  final Widget screen;
 
   const _AdminSection({
     required this.icon,
     required this.selectedIcon,
     required this.label,
+    required this.screen,
   });
-}
-
-class _StatCard extends StatelessWidget {
-  final String title;
-  final String value;
-  final IconData icon;
-  final Color color;
-
-  const _StatCard({
-    required this.title,
-    required this.value,
-    required this.icon,
-    required this.color,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: 200,
-      child: Card(
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Icon(icon, color: color, size: 32),
-                  CircleAvatar(
-                    radius: 16,
-                    backgroundColor: color.withOpacity(0.2),
-                    child: Icon(Icons.arrow_upward, color: color, size: 16),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 12),
-              Text(
-                value,
-                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                title,
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Theme.of(context).colorScheme.onSurfaceVariant,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
 }
