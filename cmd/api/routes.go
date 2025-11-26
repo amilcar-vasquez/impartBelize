@@ -71,7 +71,7 @@ func (a *app) routes() http.Handler {
 	router.Handler(http.MethodGet, apiV1Route+"/teachers", 
 		a.requireActivatedUser(http.HandlerFunc(a.listTeachersHandler)))
 	router.Handler(http.MethodPost, apiV1Route+"/teachers", 
-		a.requireAnyRole([]string{"Admin", "CEO", "TSC", "DEC"}, http.HandlerFunc(a.createTeacherHandler)))
+		a.requireActivatedUser(http.HandlerFunc(a.createTeacherHandler)))
 	router.Handler(http.MethodGet, apiV1Route+"/teachers/:id", 
 		a.requireActivatedUser(http.HandlerFunc(a.getTeacherHandler)))
 	router.Handler(http.MethodDelete, apiV1Route+"/teachers/:id", 

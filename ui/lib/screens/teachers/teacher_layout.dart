@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'home_screen.dart';
 import 'application_screen.dart';
-import 'districts_screen.dart';
-import 'institutions_screen.dart';
 import 'settings_screen.dart';
 
 class TeacherLayout extends StatefulWidget {
@@ -15,36 +13,32 @@ class TeacherLayout extends StatefulWidget {
 class _TeacherLayoutState extends State<TeacherLayout> {
   int _selectedIndex = 0;
 
-  static const List<_TeacherSection> _sections = [
+  void _navigateToTab(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
+
+  List<_TeacherSection> get _sections => [
     _TeacherSection(
       icon: Icons.home_outlined,
       label: 'Home',
       selectedIcon: Icons.home,
-      screen: TeacherHomeScreen(),
+      screen: TeacherHomeScreen(
+        onNavigateToApplication: () => _navigateToTab(1),
+      ),
     ),
     _TeacherSection(
       icon: Icons.description_outlined,
       label: 'Apply',
       selectedIcon: Icons.description,
-      screen: TeacherApplicationScreen(),
-    ),
-    _TeacherSection(
-      icon: Icons.location_city_outlined,
-      label: 'Districts',
-      selectedIcon: Icons.location_city,
-      screen: TeacherDistrictsScreen(),
-    ),
-    _TeacherSection(
-      icon: Icons.school_outlined,
-      label: 'Institutions',
-      selectedIcon: Icons.school,
-      screen: TeacherInstitutionsScreen(),
+      screen: const TeacherApplicationScreen(),
     ),
     _TeacherSection(
       icon: Icons.settings_outlined,
       label: 'Settings',
       selectedIcon: Icons.settings,
-      screen: TeacherSettingsScreen(),
+      screen: const TeacherSettingsScreen(),
     ),
   ];
 
