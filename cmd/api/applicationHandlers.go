@@ -185,6 +185,31 @@ func (a *app) updateApplicationHandler(w http.ResponseWriter, r *http.Request) {
 		application.ReviewedAt = &now
 		reviewedByInt := int(user.ID)
 		application.ReviewedBy = &reviewedByInt
+
+		// Generate license fields when status is approved
+		if *input.Status == "approved" {
+			// Generate license number if not provided
+			if input.LicenseNumber == nil || *input.LicenseNumber == "" {
+				// Generate license number format: BZ-YYYY-XXXXX (BZ-2025-00123)
+				licenseNumber := fmt.Sprintf("BZ-%d-%05d", now.Year(), application.ID)
+				application.LicenseNumber = licenseNumber
+			}
+
+			// Set issue date to now if not provided
+			if input.LicenseIssuedDate == nil {
+				application.LicenseIssuedDate = &now
+			}
+
+			// Set expiry date to 2 years from issue date if not provided
+			if input.LicenseExpiryDate == nil {
+				issueDate := now
+				if application.LicenseIssuedDate != nil {
+					issueDate = *application.LicenseIssuedDate
+				}
+				expiryDate := issueDate.AddDate(2, 0, 0) // Add 2 years
+				application.LicenseExpiryDate = &expiryDate
+			}
+		}
 	}
 
 	if input.RejectionReason != nil {
@@ -195,6 +220,7 @@ func (a *app) updateApplicationHandler(w http.ResponseWriter, r *http.Request) {
 		application.Notes = *input.Notes
 	}
 
+	// Allow manual override of license fields
 	if input.LicenseNumber != nil {
 		application.LicenseNumber = *input.LicenseNumber
 	}

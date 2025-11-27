@@ -319,3 +319,35 @@ time=2025-11-26T21:56:44.479-06:00 level=INFO msg="Server stopped" addr=:4000
 time=2025-11-26T21:20:49.822-06:00 level=INFO msg="Starting server" address=:4000 env=development
 time=2025-11-26T21:50:35.081-06:00 level=INFO msg="Starting server" address=:4000 env=development
 time=2025-11-26T22:01:19.426-06:00 level=INFO msg="Starting server" address=:4000 env=development
+time=2025-11-26T23:16:24.776-06:00 level=INFO msg="Shutting down server" signal=interrupt
+time=2025-11-26T23:16:24.776-06:00 level=INFO msg="Completing background tasks" address=:4000
+time=2025-11-26T23:16:24.776-06:00 level=INFO msg="Server stopped" addr=:4000
+time=2025-11-26T23:16:28.050-06:00 level=INFO msg="Starting server" address=:4000 env=development
+time=2025-11-26T23:30:51.786-06:00 level=INFO msg="Activating user" user_id=4 username=ed22 email=ed.panti2@gmail.com
+time=2025-11-26T23:36:18.697-06:00 level=INFO msg="Shutting down server" signal=interrupt
+time=2025-11-26T23:36:18.698-06:00 level=INFO msg="Completing background tasks" address=:4000
+time=2025-11-26T23:36:18.698-06:00 level=INFO msg="Server stopped" addr=:4000
+time=2025-11-26T23:36:21.449-06:00 level=INFO msg="Starting server" address=:4000 env=development
+time=2025-11-26T23:36:53.924-06:00 level=INFO msg="Shutting down server" signal=interrupt
+time=2025-11-26T23:36:53.924-06:00 level=INFO msg="Completing background tasks" address=:4000
+time=2025-11-26T23:36:53.924-06:00 level=INFO msg="Server stopped" addr=:4000
+time=2025-11-26T23:37:00.073-06:00 level=INFO msg="Starting server" address=:4000 env=development
+time=2025-11-26T23:50:03.943-06:00 level=ERROR msg="pq: duplicate key value violates unique constraint \"applications_license_number_key\"" method=PATCH uri=/v1/applications/2
+time=2025-11-27T00:02:57.639-06:00 level=INFO msg="Shutting down server" signal=interrupt
+time=2025-11-27T00:02:57.639-06:00 level=INFO msg="Completing background tasks" address=:4000
+time=2025-11-27T00:02:57.639-06:00 level=INFO msg="Server stopped" addr=:4000
+time=2025-11-27T00:02:59.918-06:00 level=INFO msg="Starting server" address=:4000 env=development
+time=2025-11-27T00:16:28.503-06:00 level=INFO msg="Shutting down server" signal=interrupt
+time=2025-11-27T00:16:28.503-06:00 level=INFO msg="Completing background tasks" address=:4000
+time=2025-11-27T00:16:28.503-06:00 level=INFO msg="Server stopped" addr=:4000
+time=2025-11-27T00:16:30.506-06:00 level=INFO msg="Starting server" address=:4000 env=development
+time=2025-11-27T00:18:40.644-06:00 level=INFO msg="Shutting down server" signal=interrupt
+time=2025-11-27T00:18:40.644-06:00 level=INFO msg="Completing background tasks" address=:4000
+time=2025-11-27T00:18:40.644-06:00 level=INFO msg="Server stopped" addr=:4000
+time=2025-11-27T00:18:42.136-06:00 level=INFO msg="Starting server" address=:4000 env=development
+time=2025-11-27T00:18:46.000-06:00 level=ERROR msg="sql: Scan error on column index 5, name \"status\": converting NULL to string is unsupported" method=GET uri="/v1/applications?page=1&page_size=1"
+time=2025-11-27T00:18:46.729-06:00 level=ERROR msg="sql: Scan error on column index 5, name \"status\": converting NULL to string is unsupported" method=GET uri="/v1/applications?page=1&page_size=1"
+time=2025-11-27T00:18:50.721-06:00 level=ERROR msg="sql: Scan error on column index 5, name \"status\": converting NULL to string is unsupported" method=GET uri="/v1/applications?page=1&page_size=1"
+time=2025-11-27T00:18:51.447-06:00 level=ERROR msg="sql: Scan error on column index 5, name \"status\": converting NULL to string is unsupported" method=GET uri="/v1/applications?page=1&page_size=1"
+time=2025-11-27T00:19:08.911-06:00 level=ERROR msg="sql: Scan error on column index 5, name \"status\": converting NULL to string is unsupported" method=GET uri="/v1/applications?page=1&page_size=1"
+time=2025-11-27T00:19:09.628-06:00 level=ERROR msg="sql: Scan error on column index 5, name \"status\": converting NULL to string is unsupported" method=GET uri="/v1/applications?page=1&page_size=1"

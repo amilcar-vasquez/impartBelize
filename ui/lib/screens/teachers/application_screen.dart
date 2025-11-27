@@ -5,8 +5,11 @@ import 'dart:io';
 import '../../services/api_service.dart';
 import '../../services/application_service.dart';
 import '../../services/auth_service.dart';
+import '../../services/district_service.dart';
 import '../../services/supabase_storage_service.dart';
+import '../../models/district.dart';
 import '../../widgets/education_form_widget.dart';
+import '../../widgets/qualification_form_widget.dart';
 import '../../widgets/document_upload_widget.dart';
 
 class TeacherApplicationScreen extends StatefulWidget {
@@ -23,6 +26,7 @@ class _TeacherApplicationScreenState extends State<TeacherApplicationScreen> {
   final _applicationService = ApplicationService();
   final _authService = AuthService();
   final _storageService = SupabaseStorageService();
+  final _districtService = DistrictService();
 
   // Form controllers
   final _firstNameController = TextEditingController();
@@ -39,8 +43,9 @@ class _TeacherApplicationScreenState extends State<TeacherApplicationScreen> {
   DateTime? _dateOfBirth;
   bool _isSubmitting = false;
 
-  // Education and Documents
+  // Education, Qualifications and Documents
   List<Map<String, dynamic>> _educationList = [];
+  List<Map<String, dynamic>> _qualificationList = [];
   List<Map<String, dynamic>> _documentList = [];
 
   // Options
@@ -52,15 +57,37 @@ class _TeacherApplicationScreenState extends State<TeacherApplicationScreen> {
     'Widowed',
   ];
 
-  // Mock districts - In production, fetch from API
-  final List<Map<String, dynamic>> _districts = [
-    {'id': 1, 'name': 'Belize District'},
-    {'id': 2, 'name': 'Cayo District'},
-    {'id': 3, 'name': 'Corozal District'},
-    {'id': 4, 'name': 'Orange Walk District'},
-    {'id': 5, 'name': 'Stann Creek District'},
-    {'id': 6, 'name': 'Toledo District'},
-  ];
+  // Districts fetched from API
+  List<District> _districts = [];
+  bool _isLoadingDistricts = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadDistricts();
+  }
+
+  Future<void> _loadDistricts() async {
+    try {
+      final result = await _districtService.fetchDistricts();
+      setState(() {
+        _districts = result['districts'] as List<District>;
+        _isLoadingDistricts = false;
+      });
+    } catch (e) {
+      setState(() {
+        _isLoadingDistricts = false;
+      });
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to load districts: $e'),
+            backgroundColor: Colors.orange,
+          ),
+        );
+      }
+    }
+  }
 
   @override
   void dispose() {
@@ -176,7 +203,13 @@ class _TeacherApplicationScreenState extends State<TeacherApplicationScreen> {
         await _applicationService.createEducation(education);
       }
 
-      // Step 4: Upload documents and create document records
+      // Step 4: Create qualification records (optional)
+      for (var qualification in _qualificationList) {
+        qualification['teacher_id'] = teacherId;
+        await _applicationService.createQualification(qualification);
+      }
+
+      // Step 5: Upload documents and create document records
       for (var document in _documentList) {
         // Get the actual File object
         final File file = document['file'];
@@ -222,6 +255,7 @@ class _TeacherApplicationScreenState extends State<TeacherApplicationScreen> {
           _selectedDistrictId = null;
           _dateOfBirth = null;
           _educationList = [];
+          _qualificationList = [];
           _documentList = [];
         });
       }
@@ -472,22 +506,33 @@ class _TeacherApplicationScreenState extends State<TeacherApplicationScreen> {
                           const SizedBox(height: 16),
                           DropdownButtonFormField<int>(
                             value: _selectedDistrictId,
-                            decoration: const InputDecoration(
+                            decoration: InputDecoration(
                               labelText: 'District',
-                              border: OutlineInputBorder(),
-                              prefixIcon: Icon(Icons.location_on),
+                              border: const OutlineInputBorder(),
+                              prefixIcon: const Icon(Icons.location_on),
+                              suffix: _isLoadingDistricts
+                                  ? const SizedBox(
+                                      width: 16,
+                                      height: 16,
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2,
+                                      ),
+                                    )
+                                  : null,
                             ),
                             items: _districts.map((district) {
                               return DropdownMenuItem<int>(
-                                value: district['id'] as int,
-                                child: Text(district['name'] as String),
+                                value: district.id,
+                                child: Text(district.name),
                               );
                             }).toList(),
-                            onChanged: (value) {
-                              setState(() {
-                                _selectedDistrictId = value;
-                              });
-                            },
+                            onChanged: _isLoadingDistricts
+                                ? null
+                                : (value) {
+                                    setState(() {
+                                      _selectedDistrictId = value;
+                                    });
+                                  },
                           ),
                         ],
                       ),
@@ -511,6 +556,34 @@ class _TeacherApplicationScreenState extends State<TeacherApplicationScreen> {
                     onRemove: (index) {
                       setState(() {
                         _educationList.removeAt(index);
+                      });
+                    },
+                  ),
+                  const SizedBox(height: 32),
+
+                  // Qualifications Section (Optional)
+                  Text(
+                    'Qualifications (Optional)',
+                    style: Theme.of(context).textTheme.titleLarge,
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Add any additional certifications, licenses, or qualifications you have obtained.',
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  QualificationFormWidget(
+                    qualificationList: _qualificationList,
+                    onAdd: (qualification) {
+                      setState(() {
+                        _qualificationList.add(qualification);
+                      });
+                    },
+                    onRemove: (index) {
+                      setState(() {
+                        _qualificationList.removeAt(index);
                       });
                     },
                   ),

@@ -82,6 +82,81 @@ func (a *app) getQualificationsByTeacherHandler(w http.ResponseWriter, r *http.R
 	}
 }
 
+// updateQualificationHandler handles PATCH /v1/qualifications/:id
+func (a *app) updateQualificationHandler(w http.ResponseWriter, r *http.Request) {
+	id, err := a.readIDParam(r)
+	if err != nil {
+		a.notFoundResponse(w, r)
+		return
+	}
+
+	qualification, err := a.models.Qualifications.Get(int(id))
+	if err != nil {
+		switch {
+		case errors.Is(err, data.ErrRecordNotFound):
+			a.notFoundResponse(w, r)
+		default:
+			a.serverErrorResponse(w, r, err)
+		}
+		return
+	}
+
+	var input struct {
+		Institution    *string `json:"institution"`
+		Specialization *string `json:"specialization"`
+		Certification  *string `json:"certification"`
+		YearObtained   *int    `json:"year_obtained"`
+		InstitutionID  *int    `json:"institution_id"`
+	}
+
+	err = a.readJSON(w, r, &input)
+	if err != nil {
+		a.badRequestResponse(w, r, err)
+		return
+	}
+
+	if input.Institution != nil {
+		qualification.Institution = *input.Institution
+	}
+
+	if input.Specialization != nil {
+		qualification.Specialization = *input.Specialization
+	}
+
+	if input.Certification != nil {
+		qualification.Certification = *input.Certification
+	}
+
+	if input.YearObtained != nil {
+		qualification.YearObtained = *input.YearObtained
+	}
+
+	if input.InstitutionID != nil {
+		qualification.InstitutionID = *input.InstitutionID
+	}
+
+	v := validator.New()
+	v.Check(len(qualification.Institution) <= 150, "institution", "must not be more than 150 characters long")
+	v.Check(len(qualification.Specialization) <= 100, "specialization", "must not be more than 100 characters long")
+	v.Check(len(qualification.Certification) <= 150, "certification", "must not be more than 150 characters long")
+
+	if !v.IsEmpty() {
+		a.failedValidationResponse(w, r, v.Errors)
+		return
+	}
+
+	err = a.models.Qualifications.Update(qualification)
+	if err != nil {
+		a.serverErrorResponse(w, r, err)
+		return
+	}
+
+	err = a.writeJSON(w, http.StatusOK, envelope{"qualification": qualification}, nil)
+	if err != nil {
+		a.serverErrorResponse(w, r, err)
+	}
+}
+
 // deleteQualificationHandler handles DELETE /v1/qualifications/:id
 func (a *app) deleteQualificationHandler(w http.ResponseWriter, r *http.Request) {
 	id, err := a.readIDParam(r)

@@ -21,7 +21,6 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen> {
   bool _isLoading = true;
   bool _hasTeacherProfile = false;
   Map<String, dynamic>? _latestApplication;
-  int? _teacherId;
 
   @override
   void initState() {
@@ -54,7 +53,6 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen> {
         setState(() {
           _currentUser = user;
           _hasTeacherProfile = teacher != null;
-          _teacherId = teacher?.id;
           _latestApplication = latestApp;
           _isLoading = false;
         });

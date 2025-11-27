@@ -125,9 +125,7 @@ class _AdminTeachersScreenState extends State<AdminTeachersScreen> {
           ),
           FilledButton(
             onPressed: () => Navigator.of(context).pop(true),
-            style: FilledButton.styleFrom(
-              backgroundColor: Colors.red,
-            ),
+            style: FilledButton.styleFrom(backgroundColor: Colors.red),
             child: const Text('Delete'),
           ),
         ],
@@ -211,13 +209,12 @@ class _AdminTeachersScreenState extends State<AdminTeachersScreen> {
                           const SizedBox(height: 4),
                           Text(
                             'View and manage teacher profiles',
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodyMedium
+                            style: Theme.of(context).textTheme.bodyMedium
                                 ?.copyWith(
-                              color:
-                                  Theme.of(context).colorScheme.onSurfaceVariant,
-                            ),
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.onSurfaceVariant,
+                                ),
                           ),
                         ],
                       ),
@@ -227,89 +224,90 @@ class _AdminTeachersScreenState extends State<AdminTeachersScreen> {
                 const SizedBox(height: 16),
 
                 // Search and Filter Bar
-                Row(
+                Column(
                   children: [
-                    Expanded(
-                      flex: 2,
-                      child: TextField(
-                        controller: _searchController,
-                        decoration: InputDecoration(
-                          hintText: 'Search by name or email...',
-                          prefixIcon: const Icon(Icons.search),
-                          suffixIcon: _searchQuery.isNotEmpty
-                              ? IconButton(
-                                  icon: const Icon(Icons.clear),
-                                  onPressed: () {
-                                    _searchController.clear();
-                                    setState(() => _searchQuery = '');
-                                  },
-                                )
-                              : null,
-                          border: const OutlineInputBorder(),
-                          isDense: true,
-                        ),
-                        onChanged: (value) {
-                          setState(() => _searchQuery = value);
-                        },
+                    TextField(
+                      controller: _searchController,
+                      decoration: InputDecoration(
+                        hintText: 'Search by name or email...',
+                        prefixIcon: const Icon(Icons.search),
+                        suffixIcon: _searchQuery.isNotEmpty
+                            ? IconButton(
+                                icon: const Icon(Icons.clear),
+                                onPressed: () {
+                                  _searchController.clear();
+                                  setState(() => _searchQuery = '');
+                                },
+                              )
+                            : null,
+                        border: const OutlineInputBorder(),
+                        isDense: true,
                       ),
+                      onChanged: (value) {
+                        setState(() => _searchQuery = value);
+                      },
                     ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: DropdownButtonFormField<int?>(
-                        value: _filterDistrictId,
-                        decoration: const InputDecoration(
-                          labelText: 'District',
-                          border: OutlineInputBorder(),
-                          isDense: true,
+                    const SizedBox(height: 12),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: DropdownButtonFormField<int?>(
+                            value: _filterDistrictId,
+                            decoration: const InputDecoration(
+                              labelText: 'District',
+                              border: OutlineInputBorder(),
+                              isDense: true,
+                            ),
+                            items: [
+                              const DropdownMenuItem<int?>(
+                                value: null,
+                                child: Text('All'),
+                              ),
+                              ..._districts.map((district) {
+                                return DropdownMenuItem<int?>(
+                                  value: district.id,
+                                  child: Text(district.name),
+                                );
+                              }),
+                            ],
+                            onChanged: (value) {
+                              setState(() => _filterDistrictId = value);
+                            },
+                          ),
                         ),
-                        items: [
-                          const DropdownMenuItem<int?>(
-                            value: null,
-                            child: Text('All'),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: DropdownButtonFormField<String?>(
+                            value: _filterStatus,
+                            decoration: const InputDecoration(
+                              labelText: 'Status',
+                              border: OutlineInputBorder(),
+                              isDense: true,
+                            ),
+                            items: const [
+                              DropdownMenuItem<String?>(
+                                value: null,
+                                child: Text('All'),
+                              ),
+                              DropdownMenuItem<String?>(
+                                value: 'pending',
+                                child: Text('Pending'),
+                              ),
+                              DropdownMenuItem<String?>(
+                                value: 'approved',
+                                child: Text('Approved'),
+                              ),
+                              DropdownMenuItem<String?>(
+                                value: 'rejected',
+                                child: Text('Rejected'),
+                              ),
+                            ],
+                            onChanged: (value) {
+                              setState(() => _filterStatus = value);
+                            },
                           ),
-                          ..._districts.map((district) {
-                            return DropdownMenuItem<int?>(
-                              value: district.id,
-                              child: Text(district.name),
-                            );
-                          }),
-                        ],
-                        onChanged: (value) {
-                          setState(() => _filterDistrictId = value);
-                        },
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: DropdownButtonFormField<String?>(
-                        value: _filterStatus,
-                        decoration: const InputDecoration(
-                          labelText: 'Status',
-                          border: OutlineInputBorder(),
-                          isDense: true,
                         ),
-                        items: const [
-                          DropdownMenuItem<String?>(
-                            value: null,
-                            child: Text('All'),
-                          ),
-                          DropdownMenuItem<String?>(
-                            value: 'pending',
-                            child: Text('Pending'),
-                          ),
-                          DropdownMenuItem<String?>(
-                            value: 'approved',
-                            child: Text('Approved'),
-                          ),
-                          DropdownMenuItem<String?>(
-                            value: 'rejected',
-                            child: Text('Rejected'),
-                          ),
-                        ],
-                        onChanged: (value) {
-                          setState(() => _filterStatus = value);
-                        },
-                      ),
+                      ],
                     ),
                   ],
                 ),
@@ -322,285 +320,289 @@ class _AdminTeachersScreenState extends State<AdminTeachersScreen> {
             child: _isLoading
                 ? const Center(child: CircularProgressIndicator())
                 : _error != null
-                    ? Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
+                ? Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.error_outline,
+                          size: 64,
+                          color: Theme.of(context).colorScheme.error,
+                        ),
+                        const SizedBox(height: 16),
+                        Text(
+                          'Error loading teachers',
+                          style: Theme.of(context).textTheme.titleLarge,
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          _error!,
+                          style: Theme.of(context).textTheme.bodyMedium,
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: 16),
+                        FilledButton.icon(
+                          onPressed: _loadData,
+                          icon: const Icon(Icons.refresh),
+                          label: const Text('Retry'),
+                        ),
+                      ],
+                    ),
+                  )
+                : filteredTeachers.isEmpty
+                ? Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.person_outline,
+                          size: 64,
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        ),
+                        const SizedBox(height: 16),
+                        Text(
+                          _teachers.isEmpty
+                              ? 'No teachers found'
+                              : 'No matching teachers',
+                          style: Theme.of(context).textTheme.titleLarge,
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          _teachers.isEmpty
+                              ? 'Teachers will appear here once they register'
+                              : 'Try adjusting your filters',
+                          style: Theme.of(context).textTheme.bodyMedium,
+                        ),
+                      ],
+                    ),
+                  )
+                : RefreshIndicator(
+                    onRefresh: _loadData,
+                    child: ListView(
+                      padding: const EdgeInsets.all(24),
+                      children: [
+                        // Stats Cards
+                        Row(
                           children: [
-                            Icon(
-                              Icons.error_outline,
-                              size: 64,
-                              color: Theme.of(context).colorScheme.error,
+                            Expanded(
+                              child: Card(
+                                child: Padding(
+                                  padding: const EdgeInsets.all(16),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Row(
+                                        children: [
+                                          Icon(
+                                            Icons.people,
+                                            color: Theme.of(
+                                              context,
+                                            ).colorScheme.primary,
+                                          ),
+                                          const SizedBox(width: 8),
+                                          Text(
+                                            'Total',
+                                            style: Theme.of(
+                                              context,
+                                            ).textTheme.bodyMedium,
+                                          ),
+                                        ],
+                                      ),
+                                      const SizedBox(height: 8),
+                                      Text(
+                                        '${_teachers.length}',
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .headlineMedium
+                                            ?.copyWith(
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
                             ),
-                            const SizedBox(height: 16),
-                            Text(
-                              'Error loading teachers',
-                              style: Theme.of(context).textTheme.titleLarge,
-                            ),
-                            const SizedBox(height: 8),
-                            Text(
-                              _error!,
-                              style: Theme.of(context).textTheme.bodyMedium,
-                              textAlign: TextAlign.center,
-                            ),
-                            const SizedBox(height: 16),
-                            FilledButton.icon(
-                              onPressed: _loadData,
-                              icon: const Icon(Icons.refresh),
-                              label: const Text('Retry'),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Card(
+                                child: Padding(
+                                  padding: const EdgeInsets.all(16),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Row(
+                                        children: [
+                                          Icon(
+                                            Icons.filter_list,
+                                            color: Theme.of(
+                                              context,
+                                            ).colorScheme.secondary,
+                                          ),
+                                          const SizedBox(width: 8),
+                                          Text(
+                                            'Filtered',
+                                            style: Theme.of(
+                                              context,
+                                            ).textTheme.bodyMedium,
+                                          ),
+                                        ],
+                                      ),
+                                      const SizedBox(height: 8),
+                                      Text(
+                                        '${filteredTeachers.length}',
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .headlineMedium
+                                            ?.copyWith(
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
                             ),
                           ],
                         ),
-                      )
-                    : filteredTeachers.isEmpty
-                        ? Center(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(
-                                  Icons.person_outline,
-                                  size: 64,
-                                  color: Theme.of(context)
-                                      .colorScheme
-                                      .onSurfaceVariant,
+                        const SizedBox(height: 24),
+
+                        // Teachers List
+                        ...filteredTeachers.map((teacher) {
+                          return Card(
+                            margin: const EdgeInsets.only(bottom: 12),
+                            child: ListTile(
+                              leading: CircleAvatar(
+                                backgroundColor: Theme.of(
+                                  context,
+                                ).colorScheme.primaryContainer,
+                                child: Text(
+                                  teacher.firstName[0].toUpperCase(),
+                                  style: TextStyle(
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.onPrimaryContainer,
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                 ),
-                                const SizedBox(height: 16),
-                                Text(
-                                  _teachers.isEmpty
-                                      ? 'No teachers found'
-                                      : 'No matching teachers',
-                                  style: Theme.of(context).textTheme.titleLarge,
-                                ),
-                                const SizedBox(height: 8),
-                                Text(
-                                  _teachers.isEmpty
-                                      ? 'Teachers will appear here once they register'
-                                      : 'Try adjusting your filters',
-                                  style:
-                                      Theme.of(context).textTheme.bodyMedium,
-                                ),
-                              ],
-                            ),
-                          )
-                        : RefreshIndicator(
-                            onRefresh: _loadData,
-                            child: ListView(
-                              padding: const EdgeInsets.all(24),
-                              children: [
-                                // Stats Cards
-                                Row(
-                                  children: [
-                                    Expanded(
-                                      child: Card(
-                                        child: Padding(
-                                          padding: const EdgeInsets.all(16),
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Row(
-                                                children: [
-                                                  Icon(
-                                                    Icons.people,
-                                                    color: Theme.of(context)
-                                                        .colorScheme
-                                                        .primary,
-                                                  ),
-                                                  const SizedBox(width: 8),
-                                                  Text(
-                                                    'Total',
-                                                    style: Theme.of(context)
-                                                        .textTheme
-                                                        .bodyMedium,
-                                                  ),
-                                                ],
-                                              ),
-                                              const SizedBox(height: 8),
-                                              Text(
-                                                '${_teachers.length}',
-                                                style: Theme.of(context)
-                                                    .textTheme
-                                                    .headlineMedium
-                                                    ?.copyWith(
-                                                  fontWeight: FontWeight.bold,
-                                                ),
-                                              ),
-                                            ],
-                                          ),
+                              ),
+                              title: Text(
+                                teacher.fullName,
+                                style: Theme.of(context).textTheme.titleMedium
+                                    ?.copyWith(fontWeight: FontWeight.bold),
+                              ),
+                              subtitle: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const SizedBox(height: 4),
+                                  Row(
+                                    children: [
+                                      Icon(
+                                        Icons.email,
+                                        size: 14,
+                                        color: Theme.of(
+                                          context,
+                                        ).colorScheme.onSurfaceVariant,
+                                      ),
+                                      const SizedBox(width: 4),
+                                      Expanded(
+                                        child: Text(
+                                          teacher.email,
+                                          overflow: TextOverflow.ellipsis,
                                         ),
                                       ),
-                                    ),
-                                    const SizedBox(width: 12),
-                                    Expanded(
-                                      child: Card(
-                                        child: Padding(
-                                          padding: const EdgeInsets.all(16),
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Row(
-                                                children: [
-                                                  Icon(
-                                                    Icons.filter_list,
-                                                    color: Theme.of(context)
-                                                        .colorScheme
-                                                        .secondary,
-                                                  ),
-                                                  const SizedBox(width: 8),
-                                                  Text(
-                                                    'Filtered',
-                                                    style: Theme.of(context)
-                                                        .textTheme
-                                                        .bodyMedium,
-                                                  ),
-                                                ],
-                                              ),
-                                              const SizedBox(height: 8),
-                                              Text(
-                                                '${filteredTeachers.length}',
-                                                style: Theme.of(context)
-                                                    .textTheme
-                                                    .headlineMedium
-                                                    ?.copyWith(
-                                                  fontWeight: FontWeight.bold,
-                                                ),
-                                              ),
-                                            ],
+                                    ],
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Row(
+                                    children: [
+                                      Icon(
+                                        Icons.location_city,
+                                        size: 14,
+                                        color: Theme.of(
+                                          context,
+                                        ).colorScheme.onSurfaceVariant,
+                                      ),
+                                      const SizedBox(width: 4),
+                                      Expanded(
+                                        child: Text(
+                                          _getDistrictName(teacher.districtId),
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  if (teacher.profileStatus != null) ...[
+                                    const SizedBox(height: 4),
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 8,
+                                        vertical: 2,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: _getStatusColor(
+                                          teacher.profileStatus,
+                                        ).withOpacity(0.2),
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+                                      child: Text(
+                                        teacher.profileStatus!.toUpperCase(),
+                                        style: TextStyle(
+                                          fontSize: 10,
+                                          fontWeight: FontWeight.bold,
+                                          color: _getStatusColor(
+                                            teacher.profileStatus,
                                           ),
                                         ),
                                       ),
                                     ),
                                   ],
-                                ),
-                                const SizedBox(height: 24),
-
-                                // Teachers List
-                                ...filteredTeachers.map((teacher) {
-                                  return Card(
-                                    margin: const EdgeInsets.only(bottom: 12),
-                                    child: ListTile(
-                                      leading: CircleAvatar(
-                                        backgroundColor: Theme.of(context)
-                                            .colorScheme
-                                            .primaryContainer,
-                                        child: Text(
-                                          teacher.firstName[0].toUpperCase(),
-                                          style: TextStyle(
-                                            color: Theme.of(context)
-                                                .colorScheme
-                                                .onPrimaryContainer,
-                                            fontWeight: FontWeight.bold,
-                                          ),
+                                ],
+                              ),
+                              trailing: SizedBox(
+                                width: 40,
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    InkWell(
+                                      onTap: () => _showTeacherDetails(teacher),
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(4),
+                                        child: Icon(
+                                          Icons.visibility_outlined,
+                                          size: 18,
+                                          color: Theme.of(
+                                            context,
+                                          ).colorScheme.primary,
                                         ),
-                                      ),
-                                      title: Text(
-                                        teacher.fullName,
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .titleMedium
-                                            ?.copyWith(
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                      subtitle: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          const SizedBox(height: 4),
-                                          Row(
-                                            children: [
-                                              Icon(
-                                                Icons.email,
-                                                size: 14,
-                                                color: Theme.of(context)
-                                                    .colorScheme
-                                                    .onSurfaceVariant,
-                                              ),
-                                              const SizedBox(width: 4),
-                                              Expanded(
-                                                child: Text(teacher.email),
-                                              ),
-                                            ],
-                                          ),
-                                          const SizedBox(height: 2),
-                                          Row(
-                                            children: [
-                                              Icon(
-                                                Icons.location_city,
-                                                size: 14,
-                                                color: Theme.of(context)
-                                                    .colorScheme
-                                                    .onSurfaceVariant,
-                                              ),
-                                              const SizedBox(width: 4),
-                                              Text(
-                                                _getDistrictName(
-                                                    teacher.districtId),
-                                              ),
-                                              const SizedBox(width: 12),
-                                              if (teacher.profileStatus !=
-                                                  null) ...[
-                                                Container(
-                                                  padding: const EdgeInsets
-                                                      .symmetric(
-                                                    horizontal: 8,
-                                                    vertical: 2,
-                                                  ),
-                                                  decoration: BoxDecoration(
-                                                    color: _getStatusColor(
-                                                            teacher
-                                                                .profileStatus)
-                                                        .withOpacity(0.2),
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            12),
-                                                  ),
-                                                  child: Text(
-                                                    teacher.profileStatus!
-                                                        .toUpperCase(),
-                                                    style: TextStyle(
-                                                      fontSize: 10,
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                      color: _getStatusColor(
-                                                          teacher
-                                                              .profileStatus),
-                                                    ),
-                                                  ),
-                                                ),
-                                              ],
-                                            ],
-                                          ),
-                                        ],
-                                      ),
-                                      trailing: Row(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          IconButton(
-                                            icon: const Icon(
-                                                Icons.visibility_outlined),
-                                            onPressed: () =>
-                                                _showTeacherDetails(teacher),
-                                            tooltip: 'View details',
-                                          ),
-                                          IconButton(
-                                            icon:
-                                                const Icon(Icons.delete_outline),
-                                            color: Theme.of(context)
-                                                .colorScheme
-                                                .error,
-                                            onPressed: () =>
-                                                _confirmDelete(teacher),
-                                            tooltip: 'Delete teacher',
-                                          ),
-                                        ],
                                       ),
                                     ),
-                                  );
-                                }),
-                              ],
+                                    const SizedBox(),
+                                    InkWell(
+                                      onTap: () => _confirmDelete(teacher),
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(4),
+                                        child: Icon(
+                                          Icons.delete_outline,
+                                          size: 18,
+                                          color: Theme.of(
+                                            context,
+                                          ).colorScheme.error,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
                             ),
-                          ),
+                          );
+                        }),
+                      ],
+                    ),
+                  ),
           ),
         ],
       ),
@@ -635,12 +637,14 @@ class _TeacherDetailScreenState extends State<TeacherDetailScreen> {
     setState(() => _isLoading = true);
 
     try {
-      final education =
-          await _applicationService.getEducationByTeacher(widget.teacher.id);
+      final education = await _applicationService.getEducationByTeacher(
+        widget.teacher.id,
+      );
       final qualifications = await _applicationService
           .getQualificationsByTeacher(widget.teacher.id);
-      final documents =
-          await _applicationService.getDocumentsByTeacher(widget.teacher.id);
+      final documents = await _applicationService.getDocumentsByTeacher(
+        widget.teacher.id,
+      );
 
       setState(() {
         _education = education;
@@ -708,7 +712,9 @@ class _TeacherDetailScreenState extends State<TeacherDetailScreen> {
                                 : 'N/A',
                           ),
                           _buildInfoRow(
-                              'Marital Status', teacher.maritalStatus ?? 'N/A'),
+                            'Marital Status',
+                            teacher.maritalStatus ?? 'N/A',
+                          ),
                           _buildInfoRow('Address', teacher.address ?? 'N/A'),
                           _buildInfoRow('SSN', teacher.ssn ?? 'N/A'),
                           _buildInfoRow(
@@ -749,32 +755,33 @@ class _TeacherDetailScreenState extends State<TeacherDetailScreen> {
                           if (_education.isEmpty)
                             const Text('No education records')
                           else
-                            ..._education.map((edu) => Padding(
-                                  padding: const EdgeInsets.only(bottom: 16),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        edu.institution,
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .titleMedium
-                                            ?.copyWith(
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                      if (edu.degree != null)
-                                        Text('Degree: ${edu.degree}'),
-                                      if (edu.level != null)
-                                        Text('Level: ${edu.level}'),
-                                      if (edu.program != null)
-                                        Text('Program: ${edu.program}'),
-                                      if (edu.yearObtained != null)
-                                        Text('Year: ${edu.yearObtained}'),
-                                    ],
-                                  ),
-                                )),
+                            ..._education.map(
+                              (edu) => Padding(
+                                padding: const EdgeInsets.only(bottom: 16),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      edu.institution,
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .titleMedium
+                                          ?.copyWith(
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                    ),
+                                    if (edu.degree != null)
+                                      Text('Degree: ${edu.degree}'),
+                                    if (edu.level != null)
+                                      Text('Level: ${edu.level}'),
+                                    if (edu.program != null)
+                                      Text('Program: ${edu.program}'),
+                                    if (edu.yearObtained != null)
+                                      Text('Year: ${edu.yearObtained}'),
+                                  ],
+                                ),
+                              ),
+                            ),
                         ],
                       ),
                     ),
@@ -805,32 +812,33 @@ class _TeacherDetailScreenState extends State<TeacherDetailScreen> {
                           if (_qualifications.isEmpty)
                             const Text('No qualifications')
                           else
-                            ..._qualifications.map((qual) => Padding(
-                                  padding: const EdgeInsets.only(bottom: 16),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
+                            ..._qualifications.map(
+                              (qual) => Padding(
+                                padding: const EdgeInsets.only(bottom: 16),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      qual.certification ?? 'Certification',
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .titleMedium
+                                          ?.copyWith(
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                    ),
+                                    if (qual.institution != null)
+                                      Text('Institution: ${qual.institution}'),
+                                    if (qual.specialization != null)
                                       Text(
-                                        qual.certification ?? 'Certification',
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .titleMedium
-                                            ?.copyWith(
-                                          fontWeight: FontWeight.bold,
-                                        ),
+                                        'Specialization: ${qual.specialization}',
                                       ),
-                                      if (qual.institution != null)
-                                        Text(
-                                            'Institution: ${qual.institution}'),
-                                      if (qual.specialization != null)
-                                        Text(
-                                            'Specialization: ${qual.specialization}'),
-                                      if (qual.yearObtained != null)
-                                        Text('Year: ${qual.yearObtained}'),
-                                    ],
-                                  ),
-                                )),
+                                    if (qual.yearObtained != null)
+                                      Text('Year: ${qual.yearObtained}'),
+                                  ],
+                                ),
+                              ),
+                            ),
                         ],
                       ),
                     ),
@@ -861,29 +869,32 @@ class _TeacherDetailScreenState extends State<TeacherDetailScreen> {
                           if (_documents.isEmpty)
                             const Text('No documents uploaded')
                           else
-                            ..._documents.map((doc) => ListTile(
-                                  contentPadding: EdgeInsets.zero,
-                                  leading: Icon(
-                                    doc.verified
-                                        ? Icons.check_circle
-                                        : Icons.description_outlined,
-                                    color: doc.verified
-                                        ? Colors.green
-                                        : Colors.grey,
-                                  ),
-                                  title: Text(doc.docType),
-                                  subtitle: doc.remarks != null
-                                      ? Text(doc.remarks!)
-                                      : null,
-                                  trailing: doc.verified
-                                      ? const Chip(
-                                          label: Text('Verified'),
-                                          backgroundColor: Colors.green,
-                                          labelStyle:
-                                              TextStyle(color: Colors.white),
-                                        )
-                                      : null,
-                                )),
+                            ..._documents.map(
+                              (doc) => ListTile(
+                                contentPadding: EdgeInsets.zero,
+                                leading: Icon(
+                                  doc.verified
+                                      ? Icons.check_circle
+                                      : Icons.description_outlined,
+                                  color: doc.verified
+                                      ? Colors.green
+                                      : Colors.grey,
+                                ),
+                                title: Text(doc.docType),
+                                subtitle: doc.remarks != null
+                                    ? Text(doc.remarks!)
+                                    : null,
+                                trailing: doc.verified
+                                    ? const Chip(
+                                        label: Text('Verified'),
+                                        backgroundColor: Colors.green,
+                                        labelStyle: TextStyle(
+                                          color: Colors.white,
+                                        ),
+                                      )
+                                    : null,
+                              ),
+                            ),
                         ],
                       ),
                     ),
@@ -904,14 +915,10 @@ class _TeacherDetailScreenState extends State<TeacherDetailScreen> {
             width: 140,
             child: Text(
               label,
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
-              ),
+              style: const TextStyle(fontWeight: FontWeight.bold),
             ),
           ),
-          Expanded(
-            child: Text(value),
-          ),
+          Expanded(child: Text(value)),
         ],
       ),
     );

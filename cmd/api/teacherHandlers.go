@@ -146,6 +146,128 @@ func (a *app) getTeacherByUserIDHandler(w http.ResponseWriter, r *http.Request) 
 	}
 }
 
+// updateTeacherHandler handles PATCH /v1/teachers/:id
+func (a *app) updateTeacherHandler(w http.ResponseWriter, r *http.Request) {
+	id, err := a.readIDParam(r)
+	if err != nil {
+		a.notFoundResponse(w, r)
+		return
+	}
+
+	teacher, err := a.models.Teachers.Get(int(id))
+	if err != nil {
+		switch {
+		case errors.Is(err, data.ErrRecordNotFound):
+			a.notFoundResponse(w, r)
+		default:
+			a.serverErrorResponse(w, r, err)
+		}
+		return
+	}
+
+	var input struct {
+		FirstName     *string `json:"first_name"`
+		LastName      *string `json:"last_name"`
+		Gender        *string `json:"gender"`
+		DOB           *string `json:"dob"`
+		SSN           *string `json:"ssn"`
+		MaritalStatus *string `json:"marital_status"`
+		Email         *string `json:"email"`
+		Address       *string `json:"address"`
+		DistrictID    *int    `json:"district_id"`
+		Phone         *string `json:"phone"`
+		ProfileStatus *string `json:"profile_status"`
+	}
+
+	err = a.readJSON(w, r, &input)
+	if err != nil {
+		a.badRequestResponse(w, r, err)
+		return
+	}
+
+	if input.FirstName != nil {
+		teacher.FirstName = *input.FirstName
+	}
+
+	if input.LastName != nil {
+		teacher.LastName = *input.LastName
+	}
+
+	if input.Gender != nil {
+		teacher.Gender = *input.Gender
+	}
+
+	if input.DOB != nil {
+		parsedDOB, err := time.Parse("2006-01-02", *input.DOB)
+		if err != nil {
+			v := validator.New()
+			v.AddError("dob", "must be a valid date in YYYY-MM-DD format")
+			a.failedValidationResponse(w, r, v.Errors)
+			return
+		}
+		teacher.DOB = &parsedDOB
+	}
+
+	if input.SSN != nil {
+		teacher.SSN = *input.SSN
+	}
+
+	if input.MaritalStatus != nil {
+		teacher.MaritalStatus = *input.MaritalStatus
+	}
+
+	if input.Email != nil {
+		teacher.Email = *input.Email
+	}
+
+	if input.Address != nil {
+		teacher.Address = *input.Address
+	}
+
+	if input.DistrictID != nil {
+		teacher.DistrictID = *input.DistrictID
+	}
+
+	if input.Phone != nil {
+		teacher.Phone = *input.Phone
+	}
+
+	if input.ProfileStatus != nil {
+		teacher.ProfileStatus = *input.ProfileStatus
+	}
+
+	v := validator.New()
+	v.Check(teacher.FirstName != "", "first_name", "must be provided")
+	v.Check(len(teacher.FirstName) <= 100, "first_name", "must not be more than 100 characters long")
+	v.Check(teacher.LastName != "", "last_name", "must be provided")
+	v.Check(len(teacher.LastName) <= 100, "last_name", "must not be more than 100 characters long")
+	v.Check(teacher.Email != "", "email", "must be provided")
+	v.Check(len(teacher.Email) <= 100, "email", "must not be more than 100 characters long")
+	v.Check(len(teacher.SSN) <= 15, "ssn", "must not be more than 15 characters long")
+	v.Check(len(teacher.ProfileStatus) <= 30, "profile_status", "must not be more than 30 characters long")
+
+	if !v.IsEmpty() {
+		a.failedValidationResponse(w, r, v.Errors)
+		return
+	}
+
+	err = a.models.Teachers.Update(teacher)
+	if err != nil {
+		switch {
+		case errors.Is(err, data.ErrRecordNotFound):
+			a.notFoundResponse(w, r)
+		default:
+			a.serverErrorResponse(w, r, err)
+		}
+		return
+	}
+
+	err = a.writeJSON(w, http.StatusOK, envelope{"teacher": teacher}, nil)
+	if err != nil {
+		a.serverErrorResponse(w, r, err)
+	}
+}
+
 // deleteTeacherHandler handles DELETE /v1/teachers/:id
 func (a *app) deleteTeacherHandler(w http.ResponseWriter, r *http.Request) {
 	id, err := a.readIDParam(r)

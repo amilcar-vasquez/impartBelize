@@ -27,6 +27,11 @@ type Application struct {
 	LicenseExpiryDate  *time.Time `json:"license_expiry_date,omitempty"`
 	CreatedAt          time.Time  `json:"created_at"`
 	UpdatedAt          time.Time  `json:"updated_at"`
+	// Teacher fields (when joined)
+	TeacherFirstName *string `json:"teacher_first_name,omitempty"`
+	TeacherLastName  *string `json:"teacher_last_name,omitempty"`
+	TeacherEmail     *string `json:"teacher_email,omitempty"`
+	TeacherDistrictID *int   `json:"teacher_district_id,omitempty"`
 }
 
 func ValidateApplication(v *validator.Validator, app *Application) {
@@ -223,11 +228,14 @@ func (a *ApplicationModel) GetByTeacherID(teacherID int) ([]*Application, error)
 // GetAll retrieves all applications with filtering and pagination
 func (a *ApplicationModel) GetAll(status string, applicationType string, filters Filters) ([]*Application, Metadata, error) {
 	query := `
-		SELECT count(*) OVER(), application_id, teacher_id, user_id, application_type, 
-		       status, submitted_at, reviewed_at, reviewed_by, rejection_reason, notes,
-		       license_number, license_issued_date, license_expiry_date, 
-		       created_at, updated_at
-		FROM applications
+		SELECT count(*) OVER(), 
+		       a.application_id, a.teacher_id, a.user_id, a.application_type, 
+		       a.status, a.submitted_at, a.reviewed_at, a.reviewed_by, a.rejection_reason, a.notes,
+		       a.license_number, a.license_issued_date, a.license_expiry_date, 
+		       a.created_at, a.updated_at,
+		       t.first_name, t.last_name, t.email, t.district_id
+		FROM applications a
+		INNER JOIN teachers t ON a.teacher_id = t.teacher_id
 		WHERE 1=1`
 
 	args := []interface{}{}
@@ -235,17 +243,17 @@ func (a *ApplicationModel) GetAll(status string, applicationType string, filters
 
 	if status != "" {
 		argCount++
-		query += ` AND status = $` + fmt.Sprintf("%d", argCount)
+		query += ` AND a.status = $` + fmt.Sprintf("%d", argCount)
 		args = append(args, status)
 	}
 
 	if applicationType != "" {
 		argCount++
-		query += ` AND application_type = $` + fmt.Sprintf("%d", argCount)
+		query += ` AND a.application_type = $` + fmt.Sprintf("%d", argCount)
 		args = append(args, applicationType)
 	}
 
-	query += fmt.Sprintf(" ORDER BY %s %s", filters.sortColumn(), filters.sortDirection())
+	query += fmt.Sprintf(" ORDER BY a.%s %s", filters.sortColumn(), filters.sortDirection())
 
 	argCount++
 	limitArg := argCount
@@ -272,6 +280,8 @@ func (a *ApplicationModel) GetAll(status string, applicationType string, filters
 		var reviewedAt, licenseIssuedDate, licenseExpiryDate sql.NullTime
 		var reviewedBy sql.NullInt64
 		var rejectionReason, notes, licenseNumber sql.NullString
+		var teacherFirstName, teacherLastName, teacherEmail sql.NullString
+		var teacherDistrictId sql.NullInt64
 
 		err := rows.Scan(
 			&totalRecords,
@@ -290,6 +300,10 @@ func (a *ApplicationModel) GetAll(status string, applicationType string, filters
 			&licenseExpiryDate,
 			&app.CreatedAt,
 			&app.UpdatedAt,
+			&teacherFirstName,
+			&teacherLastName,
+			&teacherEmail,
+			&teacherDistrictId,
 		)
 
 		if err != nil {
@@ -317,6 +331,19 @@ func (a *ApplicationModel) GetAll(status string, applicationType string, filters
 		}
 		if licenseExpiryDate.Valid {
 			app.LicenseExpiryDate = &licenseExpiryDate.Time
+		}
+		if teacherFirstName.Valid {
+			app.TeacherFirstName = &teacherFirstName.String
+		}
+		if teacherLastName.Valid {
+			app.TeacherLastName = &teacherLastName.String
+		}
+		if teacherEmail.Valid {
+			app.TeacherEmail = &teacherEmail.String
+		}
+		if teacherDistrictId.Valid {
+			districtId := int(teacherDistrictId.Int64)
+			app.TeacherDistrictID = &districtId
 		}
 
 		applications = append(applications, &app)

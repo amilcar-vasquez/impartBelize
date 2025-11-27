@@ -77,6 +77,68 @@ func (m *QualificationModel) GetByTeacher(teacherID int) ([]*Qualification, erro
 	return res, nil
 }
 
+func (m *QualificationModel) Get(id int) (*Qualification, error) {
+	if id < 1 {
+		return nil, ErrRecordNotFound
+	}
+	query := `SELECT qualification_id, teacher_id, institution, specialization, certification, year_obtained, institution_id FROM qualifications WHERE qualification_id = $1`
+
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	var q Qualification
+	var year sql.NullInt64
+	var inst sql.NullInt64
+	err := m.DB.QueryRowContext(ctx, query, id).Scan(&q.ID, &q.TeacherID, &q.Institution, &q.Specialization, &q.Certification, &year, &inst)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, ErrRecordNotFound
+		}
+		return nil, err
+	}
+	if year.Valid {
+		q.YearObtained = int(year.Int64)
+	}
+	if inst.Valid {
+		q.InstitutionID = int(inst.Int64)
+	}
+	return &q, nil
+}
+
+func (m *QualificationModel) Update(q *Qualification) error {
+	query := `UPDATE qualifications SET institution = $1, specialization = $2, certification = $3, year_obtained = $4, institution_id = $5 WHERE qualification_id = $6`
+
+	var year interface{}
+	if q.YearObtained > 0 {
+		year = q.YearObtained
+	} else {
+		year = nil
+	}
+
+	var inst interface{}
+	if q.InstitutionID > 0 {
+		inst = q.InstitutionID
+	} else {
+		inst = nil
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	res, err := m.DB.ExecContext(ctx, query, q.Institution, q.Specialization, q.Certification, year, inst, q.ID)
+	if err != nil {
+		return err
+	}
+	n, err := res.RowsAffected()
+	if err != nil {
+		return err
+	}
+	if n == 0 {
+		return ErrRecordNotFound
+	}
+	return nil
+}
+
 func (m *QualificationModel) Delete(id int) error {
 	if id < 1 {
 		return ErrRecordNotFound

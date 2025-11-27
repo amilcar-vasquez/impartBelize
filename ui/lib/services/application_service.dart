@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import '../models/application.dart';
 import '../models/education.dart';
 import '../models/qualification.dart';
 import '../models/document.dart';
@@ -64,6 +65,85 @@ class ApplicationService {
       }
     } catch (e) {
       throw Exception('Error fetching applications: $e');
+    }
+  }
+
+  /// Gets all applications with optional filters
+  Future<Map<String, dynamic>> getAllApplications({
+    String? status,
+    String? applicationType,
+    int page = 1,
+    int pageSize = 99,
+  }) async {
+    try {
+      final headers = await _authService.getAuthHeaders();
+
+      // Build query parameters
+      final queryParams = <String, String>{
+        'page': page.toString(),
+        'page_size': pageSize.toString(),
+      };
+      if (status != null && status.isNotEmpty) {
+        queryParams['status'] = status;
+      }
+      if (applicationType != null && applicationType.isNotEmpty) {
+        queryParams['application_type'] = applicationType;
+      }
+
+      final uri = Uri.parse(
+        '$baseUrl/applications',
+      ).replace(queryParameters: queryParams);
+
+      final response = await http.get(uri, headers: headers);
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> data = json.decode(response.body);
+
+        // Convert applications to Application objects
+        final List<dynamic> applicationsJson = data['applications'] ?? [];
+        final List<Application> applications = applicationsJson
+            .map((json) => Application.fromJson(json))
+            .toList();
+
+        return {'applications': applications, 'metadata': data['metadata']};
+      } else {
+        print(response.body);
+        throw Exception('Failed to load applications: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Error fetching applications: $e');
+    }
+  }
+
+  /// Updates an application
+  Future<Map<String, dynamic>> updateApplication(
+    int applicationId,
+    Map<String, dynamic> updateData,
+  ) async {
+    try {
+      final headers = await _authService.getAuthHeaders();
+      final response = await http.patch(
+        Uri.parse('$baseUrl/applications/$applicationId'),
+        headers: headers,
+        body: json.encode(updateData),
+      );
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> data = json.decode(response.body);
+        return data['application'];
+      } else {
+        String errorMessage =
+            'Failed to update application: ${response.statusCode}';
+        try {
+          final errorData = json.decode(response.body);
+          if (errorData['error'] != null) {
+            errorMessage = errorData['error'].toString();
+          }
+        } catch (_) {}
+        throw Exception(errorMessage);
+      }
+    } catch (e) {
+      throw Exception('Error updating application: $e');
     }
   }
 
@@ -194,6 +274,32 @@ class ApplicationService {
     }
   }
 
+  /// Updates a qualification record
+  Future<Qualification> updateQualification(
+    int id,
+    Map<String, dynamic> updateData,
+  ) async {
+    try {
+      final headers = await _authService.getAuthHeaders();
+      final response = await http.patch(
+        Uri.parse('$baseUrl/qualifications/$id'),
+        headers: headers,
+        body: json.encode(updateData),
+      );
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> data = json.decode(response.body);
+        return Qualification.fromJson(data['qualification']);
+      } else {
+        throw Exception(
+          'Failed to update qualification: ${response.statusCode}',
+        );
+      }
+    } catch (e) {
+      throw Exception('Error updating qualification: $e');
+    }
+  }
+
   /// Deletes a qualification record
   Future<void> deleteQualification(int id) async {
     try {
@@ -262,6 +368,38 @@ class ApplicationService {
       }
     } catch (e) {
       throw Exception('Error fetching documents: $e');
+    }
+  }
+
+  /// Updates a document record
+  Future<Document> updateDocument(
+    int id,
+    Map<String, dynamic> updateData,
+  ) async {
+    try {
+      final headers = await _authService.getAuthHeaders();
+      final response = await http.patch(
+        Uri.parse('$baseUrl/documents/$id'),
+        headers: headers,
+        body: json.encode(updateData),
+      );
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> data = json.decode(response.body);
+        return Document.fromJson(data['document']);
+      } else {
+        String errorMessage =
+            'Failed to update document: ${response.statusCode}';
+        try {
+          final errorData = json.decode(response.body);
+          if (errorData['error'] != null) {
+            errorMessage = errorData['error'].toString();
+          }
+        } catch (_) {}
+        throw Exception(errorMessage);
+      }
+    } catch (e) {
+      throw Exception('Error updating document: $e');
     }
   }
 

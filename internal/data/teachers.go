@@ -186,6 +186,83 @@ func (m *TeacherModel) Delete(id int) error {
 	return nil
 }
 
+// Update updates a teacher record
+func (m *TeacherModel) Update(t *Teacher) error {
+	query := `
+		UPDATE teachers 
+		SET first_name = $1, last_name = $2, gender = $3, dob = $4, ssn = $5, 
+		    marital_status = $6, email = $7, address = $8, district_id = $9, 
+		    phone = $10, profile_status = $11
+		WHERE teacher_id = $12`
+
+	var dob interface{}
+	if t.DOB != nil {
+		dob = *t.DOB
+	} else {
+		dob = nil
+	}
+
+	var district interface{}
+	if t.DistrictID > 0 {
+		district = t.DistrictID
+	} else {
+		district = nil
+	}
+
+	var ssn interface{}
+	if t.SSN != "" {
+		ssn = t.SSN
+	} else {
+		ssn = nil
+	}
+
+	var gender interface{}
+	if t.Gender != "" {
+		gender = t.Gender
+	} else {
+		gender = nil
+	}
+
+	var maritalStatus interface{}
+	if t.MaritalStatus != "" {
+		maritalStatus = t.MaritalStatus
+	} else {
+		maritalStatus = nil
+	}
+
+	var address interface{}
+	if t.Address != "" {
+		address = t.Address
+	} else {
+		address = nil
+	}
+
+	var phone interface{}
+	if t.Phone != "" {
+		phone = t.Phone
+	} else {
+		phone = nil
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	res, err := m.DB.ExecContext(ctx, query, t.FirstName, t.LastName, gender, dob, ssn, maritalStatus, t.Email, address, district, phone, t.ProfileStatus, t.ID)
+	if err != nil {
+		return err
+	}
+
+	n, err := res.RowsAffected()
+	if err != nil {
+		return err
+	}
+	if n == 0 {
+		return ErrRecordNotFound
+	}
+
+	return nil
+}
+
 // GetAll retrieves all teachers from the database
 func (m *TeacherModel) GetAll() ([]*Teacher, error) {
 	query := `

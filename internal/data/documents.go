@@ -125,6 +125,35 @@ func (m *DocumentModel) GetByTeacher(teacherID int) ([]*Document, error) {
 	return out, nil
 }
 
+func (m *DocumentModel) Update(d *Document) error {
+	query := `
+		UPDATE documents 
+		SET verified = $1, remarks = $2
+		WHERE document_id = $3
+		RETURNING uploaded_at`
+
+	args := []interface{}{
+		d.Verified,
+		d.Remarks,
+		d.ID,
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	err := m.DB.QueryRowContext(ctx, query, args...).Scan(&d.UploadedAt)
+	if err != nil {
+		switch {
+		case errors.Is(err, sql.ErrNoRows):
+			return ErrRecordNotFound
+		default:
+			return err
+		}
+	}
+
+	return nil
+}
+
 func (m *DocumentModel) Delete(id int) error {
 	if id < 1 {
 		return ErrRecordNotFound

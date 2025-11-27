@@ -81,6 +81,8 @@ func (a *app) routes() http.Handler {
 	router.Handler(http.MethodGet, apiV1Route+"/teachers/:id/documents", 
 	a.requireActivatedUser(http.HandlerFunc(a.getDocumentsByTeacherHandler)))
 	// Wildcard routes must come last
+	router.Handler(http.MethodPatch, apiV1Route+"/teachers/:id", 
+	a.requireActivatedUser(http.HandlerFunc(a.updateTeacherHandler)))
 	router.Handler(http.MethodDelete, apiV1Route+"/teachers/:id", 
 	a.requireAnyRole([]string{"admin", "CEO", "TSC"}, http.HandlerFunc(a.deleteTeacherHandler)))
 	router.Handler(http.MethodGet, apiV1Route+"/teachers/:id", 
@@ -98,6 +100,8 @@ func (a *app) routes() http.Handler {
 	// Qualification routes - Teachers can manage their own, admin/CEO/TSC/DEC can manage all (must be activated)
 	router.Handler(http.MethodPost, apiV1Route+"/qualifications", 
 		a.requireActivatedUser(http.HandlerFunc(a.createQualificationHandler)))
+	router.Handler(http.MethodPatch, apiV1Route+"/qualifications/:id", 
+		a.requireActivatedUser(http.HandlerFunc(a.updateQualificationHandler)))
 	router.Handler(http.MethodDelete, apiV1Route+"/qualifications/:id", 
 		a.requireActivatedUser(http.HandlerFunc(a.deleteQualificationHandler)))
 
@@ -106,6 +110,8 @@ func (a *app) routes() http.Handler {
 		a.requireActivatedUser(http.HandlerFunc(a.createDocumentHandler)))
 	router.Handler(http.MethodGet, apiV1Route+"/documents/:id", 
 		a.requireActivatedUser(http.HandlerFunc(a.getDocumentHandler)))
+	router.Handler(http.MethodPatch, apiV1Route+"/documents/:id", 
+		a.requireActivatedUser(http.HandlerFunc(a.updateDocumentHandler)))
 	router.Handler(http.MethodDelete, apiV1Route+"/documents/:id", 
 		a.requireActivatedUser(http.HandlerFunc(a.deleteDocumentHandler)))
 	

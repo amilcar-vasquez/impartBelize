@@ -112,6 +112,56 @@ func (a *app) getDocumentsByTeacherHandler(w http.ResponseWriter, r *http.Reques
 	}
 }
 
+// updateDocumentHandler handles PATCH /v1/documents/:id
+func (a *app) updateDocumentHandler(w http.ResponseWriter, r *http.Request) {
+	id, err := a.readIDParam(r)
+	if err != nil {
+		a.notFoundResponse(w, r)
+		return
+	}
+
+	document, err := a.models.Documents.Get(int(id))
+	if err != nil {
+		switch {
+		case errors.Is(err, data.ErrRecordNotFound):
+			a.notFoundResponse(w, r)
+		default:
+			a.serverErrorResponse(w, r, err)
+		}
+		return
+	}
+
+	var input struct {
+		Verified *bool   `json:"verified"`
+		Remarks  *string `json:"remarks"`
+	}
+
+	err = a.readJSON(w, r, &input)
+	if err != nil {
+		a.badRequestResponse(w, r, err)
+		return
+	}
+
+	if input.Verified != nil {
+		document.Verified = *input.Verified
+	}
+
+	if input.Remarks != nil {
+		document.Remarks = *input.Remarks
+	}
+
+	err = a.models.Documents.Update(document)
+	if err != nil {
+		a.serverErrorResponse(w, r, err)
+		return
+	}
+
+	err = a.writeJSON(w, http.StatusOK, envelope{"document": document}, nil)
+	if err != nil {
+		a.serverErrorResponse(w, r, err)
+	}
+}
+
 // deleteDocumentHandler handles DELETE /v1/documents/:id
 func (a *app) deleteDocumentHandler(w http.ResponseWriter, r *http.Request) {
 	id, err := a.readIDParam(r)
