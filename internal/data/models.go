@@ -6,6 +6,7 @@ import (
 
 // Model struct to wrap all data models
 type Models struct {
+	Applications   *ApplicationModel
 	Tokens         *TokenModel
 	Districts      *DistrictModel
 	Documents      *DocumentModel
@@ -21,6 +22,7 @@ type Models struct {
 // NewModels initializes and returns a new Models struct
 func NewModels(db *sql.DB) *Models {
 	return &Models{
+		Applications:   &ApplicationModel{DB: db},
 		Tokens:         &TokenModel{DB: db},
 		Districts:      &DistrictModel{DB: db},
 		Documents:      &DocumentModel{DB: db},
@@ -38,6 +40,7 @@ func NewModels(db *sql.DB) *Models {
 // with nil DB connections (for validation tests that don't need database)
 func NewTestModels() *Models {
 	return &Models{
+		Applications:   &ApplicationModel{DB: nil},
 		Tokens:         &TokenModel{DB: nil},
 		Districts:      &DistrictModel{DB: nil},
 		Documents:      &DocumentModel{DB: nil},

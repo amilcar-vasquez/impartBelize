@@ -161,13 +161,22 @@ class _TeacherApplicationScreenState extends State<TeacherApplicationScreen> {
       final teacher = await _apiService.createTeacher(teacherData);
       final teacherId = teacher.id;
 
-      // Step 2: Create education records
+      // Step 2: Create application record
+      final applicationData = {
+        'teacher_id': teacherId,
+        'user_id': currentUser.userId,
+        'application_type': 'new_license',
+        'notes': 'Initial teacher license application',
+      };
+      await _applicationService.createApplication(applicationData);
+
+      // Step 3: Create education records
       for (var education in _educationList) {
         education['teacher_id'] = teacherId;
         await _applicationService.createEducation(education);
       }
 
-      // Step 3: Upload documents and create document records
+      // Step 4: Upload documents and create document records
       for (var document in _documentList) {
         // Get the actual File object
         final File file = document['file'];

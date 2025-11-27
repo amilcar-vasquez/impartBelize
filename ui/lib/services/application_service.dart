@@ -11,6 +11,39 @@ class ApplicationService {
 
   static String get baseUrl => AppConfig.apiBaseUrl;
 
+  // ==================== Application Endpoints ====================
+
+  /// Creates a new application record
+  Future<Map<String, dynamic>> createApplication(
+    Map<String, dynamic> applicationData,
+  ) async {
+    try {
+      final headers = await _authService.getAuthHeaders();
+      final response = await http.post(
+        Uri.parse('$baseUrl/applications'),
+        headers: headers,
+        body: json.encode(applicationData),
+      );
+
+      if (response.statusCode == 201) {
+        final Map<String, dynamic> data = json.decode(response.body);
+        return data['application'];
+      } else {
+        String errorMessage =
+            'Failed to create application: ${response.statusCode}';
+        try {
+          final errorData = json.decode(response.body);
+          if (errorData['error'] != null) {
+            errorMessage = errorData['error'].toString();
+          }
+        } catch (_) {}
+        throw Exception(errorMessage);
+      }
+    } catch (e) {
+      throw Exception('Error creating application: $e');
+    }
+  }
+
   // ==================== Education Endpoints ====================
 
   /// Creates a new education record

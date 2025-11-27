@@ -108,6 +108,21 @@ func (a *app) routes() http.Handler {
 		a.requireActivatedUser(http.HandlerFunc(a.getDocumentHandler)))
 	router.Handler(http.MethodDelete, apiV1Route+"/documents/:id", 
 		a.requireActivatedUser(http.HandlerFunc(a.deleteDocumentHandler)))
+	
+	// Application routes - Teachers can create/view their own, admin/CEO/TSC/DEC can manage all (must be activated)
+	router.Handler(http.MethodPost, apiV1Route+"/applications", 
+		a.requireActivatedUser(http.HandlerFunc(a.createApplicationHandler)))
+	router.Handler(http.MethodGet, apiV1Route+"/applications", 
+		a.requireActivatedUser(http.HandlerFunc(a.getAllApplicationsHandler)))
+	router.Handler(http.MethodGet, apiV1Route+"/application/teacher/:id", 
+		a.requireActivatedUser(http.HandlerFunc(a.getApplicationsByTeacherHandler)))
+	router.Handler(http.MethodGet, apiV1Route+"/applications/:id", 
+		a.requireActivatedUser(http.HandlerFunc(a.getApplicationHandler)))
+	router.Handler(http.MethodPatch, apiV1Route+"/applications/:id", 
+		a.requireAnyRole([]string{"admin", "CEO", "TSC", "DEC"}, http.HandlerFunc(a.updateApplicationHandler)))
+	router.Handler(http.MethodDelete, apiV1Route+"/applications/:id", 
+		a.requireAnyRole([]string{"admin", "CEO", "TSC"}, http.HandlerFunc(a.deleteApplicationHandler)))
+	
 	// Notification routes - admin/CEO/Secretary can create, users can manage their own (must be activated)
 	router.Handler(http.MethodPost, apiV1Route+"/notifications", a.requireAnyRole([]string{"admin", "CEO", "Secretary"}, http.HandlerFunc(a.createNotificationHandler)))
 	router.Handler(http.MethodPatch, apiV1Route+"/notifications/:id/read", 
