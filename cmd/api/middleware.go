@@ -37,15 +37,24 @@ func (a *app) enableCORS(next http.Handler) http.Handler {
 			// Check if origin matches any trusted origin (with wildcard support)
 			for i := range a.config.cors.trustedOrigins {
 				trusted := a.config.cors.trustedOrigins[i]
-				// Support wildcard matching for localhost and 127.0.0.1
-				if trusted == origin ||
-					(strings.HasSuffix(trusted, "*") && strings.HasPrefix(origin, trusted[:len(trusted)-1])) ||
-					(strings.Contains(origin, "localhost") && strings.Contains(trusted, "localhost")) ||
-					(strings.Contains(origin, "127.0.0.1") && strings.Contains(trusted, "127.0.0.1")) {
+				matched := false
 
+				// Exact match
+				if trusted == origin {
+					matched = true
+				} else if strings.Contains(trusted, "*") {
+					// Wildcard matching - replace :* with any port
+					pattern := strings.ReplaceAll(trusted, ":*", ":")
+					if strings.HasPrefix(origin, pattern) {
+						matched = true
+					}
+				}
+
+				if matched {
 					w.Header().Set("Access-Control-Allow-Origin", origin)
 					w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE, OPTIONS")
 					w.Header().Set("Access-Control-Allow-Headers", "Authorization, Content-Type")
+					w.Header().Set("Access-Control-Max-Age", "86400")
 
 					if r.Method == "OPTIONS" {
 						w.WriteHeader(http.StatusOK)
@@ -187,8 +196,6 @@ func (a *app) requireActivatedUser(next http.HandlerFunc) http.HandlerFunc {
 	})
 	return a.requireAuthenticatedUser(fn)
 }
-
-
 
 // This middleware checks if the user has the required role
 // We send the role name that is expected as an argument

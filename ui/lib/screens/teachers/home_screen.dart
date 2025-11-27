@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../services/auth_service.dart';
 import '../../services/api_service.dart';
+import '../../services/application_service.dart';
 import '../../models/user.dart';
 
 class TeacherHomeScreen extends StatefulWidget {
@@ -15,9 +16,12 @@ class TeacherHomeScreen extends StatefulWidget {
 class _TeacherHomeScreenState extends State<TeacherHomeScreen> {
   final AuthService _authService = AuthService();
   final ApiService _apiService = ApiService();
+  final ApplicationService _applicationService = ApplicationService();
   User? _currentUser;
   bool _isLoading = true;
   bool _hasTeacherProfile = false;
+  Map<String, dynamic>? _latestApplication;
+  int? _teacherId;
 
   @override
   void initState() {
@@ -35,9 +39,23 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen> {
       if (user != null) {
         // Check if teacher profile exists
         final teacher = await _apiService.fetchTeacherByUserId(user.userId);
+        Map<String, dynamic>? latestApp;
+        if (teacher != null) {
+          // Fetch applications for this teacher
+          final applications = await _applicationService
+              .getApplicationsByTeacher(teacher.id);
+          // Get the latest application (most recent submitted_at)
+          if (applications.isNotEmpty) {
+            latestApp = applications
+                .first; // Already sorted by submitted_at DESC from backend
+          }
+        }
+
         setState(() {
           _currentUser = user;
           _hasTeacherProfile = teacher != null;
+          _teacherId = teacher?.id;
+          _latestApplication = latestApp;
           _isLoading = false;
         });
       } else {
@@ -107,69 +125,9 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen> {
         Card(
           child: Padding(
             padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Icon(
-                      Icons.card_membership,
-                      color: Theme.of(context).colorScheme.primary,
-                      size: 32,
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Teaching License',
-                            style: Theme.of(context).textTheme.titleLarge,
-                          ),
-                          Text(
-                            'Active • Expires: Dec 31, 2025',
-                            style: Theme.of(context).textTheme.bodyMedium
-                                ?.copyWith(
-                                  color: Theme.of(
-                                    context,
-                                  ).colorScheme.onSurfaceVariant,
-                                ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 6,
-                      ),
-                      decoration: BoxDecoration(
-                        color: Colors.green.withOpacity(0.2),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: const Text(
-                        'Active',
-                        style: TextStyle(
-                          color: Colors.green,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 16),
-                FilledButton.icon(
-                  onPressed: () {
-                    // Navigate to renewal application
-                  },
-                  icon: const Icon(Icons.refresh),
-                  label: const Text('Renew License'),
-                  style: FilledButton.styleFrom(
-                    minimumSize: const Size.fromHeight(48),
-                  ),
-                ),
-              ],
-            ),
+            child: _latestApplication != null
+                ? _buildApplicationStatusCard()
+                : _buildNoApplicationCard(),
           ),
         ),
         const SizedBox(height: 16),
@@ -396,6 +354,175 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen> {
               // Navigate to help/support
             },
           ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildApplicationStatusCard() {
+    final status = _latestApplication!['status'] as String;
+    final licenseNumber = _latestApplication!['license_number'] as String?;
+    final expiryDate = _latestApplication!['license_expiry_date'] as String?;
+
+    Color statusColor;
+    String statusText;
+    IconData statusIcon;
+    String subtitle;
+    Widget? actionButton;
+
+    switch (status) {
+      case 'pending':
+        statusColor = Colors.orange;
+        statusText = 'Pending Review';
+        statusIcon = Icons.hourglass_empty;
+        subtitle = 'Your application is awaiting review';
+        actionButton = null;
+        break;
+      case 'under_review':
+        statusColor = Colors.blue;
+        statusText = 'Under Review';
+        statusIcon = Icons.search;
+        subtitle = 'Your application is currently being reviewed';
+        actionButton = null;
+        break;
+      case 'approved':
+        statusColor = Colors.green;
+        statusText = 'Active';
+        statusIcon = Icons.check_circle;
+        subtitle = licenseNumber != null
+            ? 'License: $licenseNumber${expiryDate != null ? " • Expires: $expiryDate" : ""}'
+            : 'Your license has been approved';
+        actionButton = FilledButton.icon(
+          onPressed: () {
+            // Navigate to renewal application
+          },
+          icon: const Icon(Icons.refresh),
+          label: const Text('Renew License'),
+          style: FilledButton.styleFrom(minimumSize: const Size.fromHeight(48)),
+        );
+        break;
+      case 'rejected':
+        statusColor = Colors.red;
+        statusText = 'Rejected';
+        statusIcon = Icons.cancel;
+        subtitle =
+            _latestApplication!['rejection_reason'] as String? ??
+            'Your application was not approved';
+        actionButton = FilledButton.icon(
+          onPressed: widget.onNavigateToApplication,
+          icon: const Icon(Icons.replay),
+          label: const Text('Reapply'),
+          style: FilledButton.styleFrom(minimumSize: const Size.fromHeight(48)),
+        );
+        break;
+      case 'incomplete':
+        statusColor = Colors.amber;
+        statusText = 'Incomplete';
+        statusIcon = Icons.warning;
+        subtitle = 'Additional information required';
+        actionButton = FilledButton.icon(
+          onPressed: () {
+            // Navigate to complete application
+          },
+          icon: const Icon(Icons.edit),
+          label: const Text('Complete Application'),
+          style: FilledButton.styleFrom(minimumSize: const Size.fromHeight(48)),
+        );
+        break;
+      default:
+        statusColor = Colors.grey;
+        statusText = 'Unknown';
+        statusIcon = Icons.help;
+        subtitle = 'Status: $status';
+        actionButton = null;
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Icon(
+              statusIcon,
+              color: Theme.of(context).colorScheme.primary,
+              size: 32,
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Teaching License Application',
+                    style: Theme.of(context).textTheme.titleLarge,
+                  ),
+                  Text(
+                    subtitle,
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              decoration: BoxDecoration(
+                color: statusColor.withOpacity(0.2),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Text(
+                statusText,
+                style: TextStyle(
+                  color: statusColor,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ],
+        ),
+        if (actionButton != null) ...[const SizedBox(height: 16), actionButton],
+      ],
+    );
+  }
+
+  Widget _buildNoApplicationCard() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Icon(
+              Icons.info_outline,
+              color: Theme.of(context).colorScheme.primary,
+              size: 32,
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'No Application Found',
+                    style: Theme.of(context).textTheme.titleLarge,
+                  ),
+                  Text(
+                    'You have not submitted a license application yet',
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 16),
+        FilledButton.icon(
+          onPressed: widget.onNavigateToApplication,
+          icon: const Icon(Icons.add_circle),
+          label: const Text('Apply for Teaching License'),
+          style: FilledButton.styleFrom(minimumSize: const Size.fromHeight(48)),
         ),
       ],
     );

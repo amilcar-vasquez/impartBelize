@@ -44,6 +44,29 @@ class ApplicationService {
     }
   }
 
+  /// Gets all applications for a specific teacher
+  Future<List<Map<String, dynamic>>> getApplicationsByTeacher(
+    int teacherId,
+  ) async {
+    try {
+      final headers = await _authService.getAuthHeaders();
+      final response = await http.get(
+        Uri.parse('$baseUrl/application/teacher/$teacherId'),
+        headers: headers,
+      );
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> data = json.decode(response.body);
+        final List<dynamic> applicationsJson = data['applications'] ?? [];
+        return applicationsJson.cast<Map<String, dynamic>>();
+      } else {
+        throw Exception('Failed to load applications: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Error fetching applications: $e');
+    }
+  }
+
   // ==================== Education Endpoints ====================
 
   /// Creates a new education record
