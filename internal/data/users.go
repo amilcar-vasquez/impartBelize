@@ -17,19 +17,18 @@ import (
 var AnonymousUser = &User{}
 
 type User struct {
-	ID          int64      `json:"user_id"`
-	Username    string     `json:"username"`
-	Email       string     `json:"email"`
-	Password    password   `json:"-"`
-	RoleID      int        `json:"role_id"`
-	RoleName    string     `json:"role_name,omitempty"`
-	IsActive    bool       `json:"is_active"`
-	IsActivated bool       `json:"is_activated"`
-	LastLogin   *time.Time `json:"last_login,omitempty"`
-	CreatedAt   time.Time  `json:"created_at"`
-	CreatedBy   int        `json:"created_by,omitempty"`
-	UpdatedAt   time.Time  `json:"updated_at"`
-	UpdatedBy   int        `json:"updated_by,omitempty"`
+	ID        int64      `json:"user_id"`
+	Username  string     `json:"username"`
+	Email     string     `json:"email"`
+	Password  password   `json:"-"`
+	RoleID    int        `json:"role_id"`
+	RoleName  string     `json:"role_name,omitempty"`
+	IsActive  bool       `json:"is_active"`
+	LastLogin *time.Time `json:"last_login,omitempty"`
+	CreatedAt time.Time  `json:"created_at"`
+	CreatedBy int        `json:"created_by,omitempty"`
+	UpdatedAt time.Time  `json:"updated_at"`
+	UpdatedBy int        `json:"updated_by,omitempty"`
 }
 
 // define the password type (the plaintext + hashed password)
@@ -108,9 +107,9 @@ type UserModel struct {
 func (u *UserModel) Insert(user *User) error {
 	query := `
 		INSERT INTO users (
-			username, email, password_hash, role_id, is_active, is_activated, last_login, created_by, updated_by
+			username, email, password_hash, role_id, is_active, last_login, created_by, updated_by
 		) VALUES (
-			$1, $2, $3, $4, $5, $6, $7, $8, $9
+			$1, $2, $3, $4, $5, $6, $7, $8
 		)
 		RETURNING user_id, created_at, updated_at
 	`
@@ -142,7 +141,6 @@ func (u *UserModel) Insert(user *User) error {
 		user.Password.hash,
 		user.RoleID,
 		user.IsActive,
-		user.IsActivated,
 		lastLogin,
 		createdBy,
 		updatedBy,
@@ -165,7 +163,7 @@ func (u *UserModel) Insert(user *User) error {
 // Get a user from the database based on their email provided
 func (u *UserModel) GetByEmail(email string) (*User, error) {
 	query := `
-		SELECT user_id, username, email, password_hash, role_id, is_active, is_activated, last_login, created_at, created_by, updated_at, updated_by
+		SELECT user_id, username, email, password_hash, role_id, is_active, last_login, created_at, created_by, updated_at, updated_by
 		FROM users
 		WHERE email = $1
 	`
@@ -186,7 +184,6 @@ func (u *UserModel) GetByEmail(email string) (*User, error) {
 		&user.Password.hash,
 		&user.RoleID,
 		&user.IsActive,
-		&user.IsActivated,
 		&lastLogin,
 		&user.CreatedAt,
 		&createdBy,
@@ -220,8 +217,8 @@ func (m *UserModel) Update(user *User) error {
 	query := `
 		UPDATE users
 		SET username = $1, email = $2, password_hash = $3, role_id = $4,
-			is_active = $5, is_activated = $6, last_login = $7, updated_at = NOW(), updated_by = $8
-		WHERE user_id = $9
+			is_active = $5, last_login = $6, updated_at = NOW(), updated_by = $7
+		WHERE user_id = $8
 		RETURNING updated_at
 	`
 
@@ -245,7 +242,6 @@ func (m *UserModel) Update(user *User) error {
 		user.Password.hash,
 		user.RoleID,
 		user.IsActive,
-		user.IsActivated,
 		lastLogin,
 		updatedBy,
 		user.ID,
@@ -270,11 +266,11 @@ func (m *UserModel) Update(user *User) error {
 
 // UpdateActivation updates only the is_active field for a user
 // This is used when activating a user account via email token
-func (m *UserModel) UpdateActivation(userID int64, isActive bool, isActivated bool) error {
+func (m *UserModel) UpdateActivation(userID int64, isActive bool) error {
 	query := `
 		UPDATE users
-		SET is_active = $1, is_activated = $2, updated_at = NOW()
-		WHERE user_id = $3
+		SET is_active = $1, updated_at = NOW()
+		WHERE user_id = $2
 		RETURNING updated_at
 	`
 
@@ -282,7 +278,7 @@ func (m *UserModel) UpdateActivation(userID int64, isActive bool, isActivated bo
 	defer cancel()
 
 	var updatedAt time.Time
-	err := m.DB.QueryRowContext(ctx, query, isActive, isActivated, userID).Scan(&updatedAt)
+	err := m.DB.QueryRowContext(ctx, query, isActive, userID).Scan(&updatedAt)
 	if err != nil {
 		switch {
 		case errors.Is(err, sql.ErrNoRows):
@@ -302,7 +298,7 @@ func (u *UserModel) Get(id int) (*User, error) {
 	}
 
 	query := `
-		SELECT user_id, username, email, password_hash, role_id, is_active, is_activated, last_login, created_at, created_by, updated_at, updated_by
+		SELECT user_id, username, email, password_hash, role_id, is_active, last_login, created_at, created_by, updated_at, updated_by
 		FROM users
 		WHERE user_id = $1`
 
@@ -321,7 +317,6 @@ func (u *UserModel) Get(id int) (*User, error) {
 		&user.Password.hash,
 		&user.RoleID,
 		&user.IsActive,
-		&user.IsActivated,
 		&lastLogin,
 		&user.CreatedAt,
 		&createdBy,
@@ -354,7 +349,7 @@ func (u *UserModel) Get(id int) (*User, error) {
 // GetAll retrieves all users with filtering and pagination
 func (u *UserModel) GetAll(regionID, formationID, rankID int, isActive *bool, lastName string, username string, filters Filters) ([]*User, Metadata, error) {
 	query := `
-		SELECT count(*) OVER(), u.user_id, u.username, u.email, u.role_id, r.name as role_name, u.is_active, u.is_activated, u.last_login, u.created_at, u.created_by, u.updated_at, u.updated_by
+		SELECT count(*) OVER(), u.user_id, u.username, u.email, u.role_id, r.name as role_name, u.is_active, u.last_login, u.created_at, u.created_by, u.updated_at, u.updated_by
 		FROM users u
 		LEFT JOIN roles r ON u.role_id = r.role_id
 		WHERE 1=1`
@@ -438,7 +433,6 @@ func (u *UserModel) GetAll(regionID, formationID, rankID int, isActive *bool, la
 			&user.RoleID,
 			&roleName,
 			&user.IsActive,
-			&user.IsActivated,
 			&lastLogin,
 			&user.CreatedAt,
 			&createdBy,

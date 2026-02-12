@@ -5,7 +5,6 @@ class User {
   final int roleId;
   final String? roleName;
   final bool isActive;
-  final bool isActivated;
   final DateTime? lastLogin;
   final DateTime createdAt;
   final DateTime updatedAt;
@@ -17,7 +16,6 @@ class User {
     required this.roleId,
     this.roleName,
     required this.isActive,
-    required this.isActivated,
     this.lastLogin,
     required this.createdAt,
     required this.updatedAt,
@@ -31,7 +29,6 @@ class User {
       roleId: json['role_id'] as int,
       roleName: json['role_name'] as String?,
       isActive: json['is_active'] as bool,
-      isActivated: json['is_activated'] as bool,
       lastLogin: json['last_login'] != null
           ? DateTime.parse(json['last_login'] as String)
           : null,
@@ -48,7 +45,6 @@ class User {
       'role_id': roleId,
       'role_name': roleName,
       'is_active': isActive,
-      'is_activated': isActivated,
       'last_login': lastLogin?.toIso8601String(),
       'created_at': createdAt.toIso8601String(),
       'updated_at': updatedAt.toIso8601String(),

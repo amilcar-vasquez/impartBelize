@@ -27,7 +27,6 @@ class _UserEditModalState extends State<UserEditModal> {
   late TextEditingController _emailController;
   late TextEditingController _passwordController;
   late bool _isActive;
-  late bool _isActivated;
   late int _roleId;
 
   bool _isLoading = false;
@@ -42,7 +41,6 @@ class _UserEditModalState extends State<UserEditModal> {
     _emailController = TextEditingController(text: widget.user.email);
     _passwordController = TextEditingController();
     _isActive = widget.user.isActive;
-    _isActivated = widget.user.isActivated;
     _roleId = widget.user.roleId;
     _loadRoles();
   }
@@ -83,7 +81,6 @@ class _UserEditModalState extends State<UserEditModal> {
         'email': _emailController.text.trim(),
         'role_id': _roleId,
         'is_active': _isActive,
-        'is_activated': _isActivated,
       };
 
       // Only include password if it was changed
@@ -287,15 +284,7 @@ class _UserEditModalState extends State<UserEditModal> {
             ),
             const SizedBox(height: 8),
 
-            // Activated status
-            Card(
-              child: SwitchListTile(
-                title: const Text('Activated'),
-                subtitle: const Text('Email has been verified'),
-                value: _isActivated,
-                onChanged: (value) => setState(() => _isActivated = value),
-              ),
-            ),
+            // (Activation state consolidated into Active)
             const SizedBox(height: 24),
 
             // Save button

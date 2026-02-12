@@ -22,11 +22,11 @@ func testHandlerDirect(t *testing.T, app *app, handler http.HandlerFunc, method,
 
 	// Add authenticated admin user to context
 	user := &data.User{
-		ID:          1,
-		Username:    "testadmin",
-		Email:       "admin@example.com",
-		IsActivated: true,
-		RoleID:      1, // Admin role
+		ID:       1,
+		Username: "testadmin",
+		Email:    "admin@example.com",
+		IsActive: true,
+		RoleID:   1, // Admin role
 	}
 	req = app.contextSetUser(req, user)
 

@@ -40,11 +40,10 @@ func (a *app) registerUserHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Create a new User struct and copy the data from the temporary struct to the new User struct
 	user := &data.User{
-		Username:    incomingData.Username,
-		Email:       incomingData.Email,
-		RoleID:      roleID,
-		IsActive:    false, // Must activate via email
-		IsActivated: false,
+		Username: incomingData.Username,
+		Email:    incomingData.Email,
+		RoleID:   roleID,
+		IsActive: false, // Must activate via email
 	}
 
 	// hash the password and store it (sets plaintext pointer too)
@@ -140,7 +139,7 @@ func (a *app) activateUserHandler(w http.ResponseWriter, r *http.Request) {
 
 	// User provided the right token so activate them
 	a.logger.Info("Activating user", "user_id", user.ID, "username", user.Username, "email", user.Email)
-	err = a.models.Users.UpdateActivation(user.ID, true, true)
+	err = a.models.Users.UpdateActivation(user.ID, true)
 	if err != nil {
 		switch {
 		case errors.Is(err, data.ErrRecordNotFound):
@@ -154,7 +153,6 @@ func (a *app) activateUserHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Update the user object for the response
 	user.IsActive = true
-	user.IsActivated = true
 
 	// User has been activated so delete the activation token to
 	// prevent reuse.
@@ -362,12 +360,11 @@ func (a *app) updateUserHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Parse the request body for updates
 	var input struct {
-		Username    *string `json:"username"`
-		Password    *string `json:"password"`
-		Email       *string `json:"email"`
-		RoleID      *int    `json:"role_id"`
-		IsActive    *bool   `json:"is_active"`
-		IsActivated *bool   `json:"is_activated"`
+		Username *string `json:"username"`
+		Password *string `json:"password"`
+		Email    *string `json:"email"`
+		RoleID   *int    `json:"role_id"`
+		IsActive *bool   `json:"is_active"`
 	}
 
 	err = a.readJSON(w, r, &input)
@@ -376,8 +373,8 @@ func (a *app) updateUserHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Check if user is trying to update role_id/is_active/is_activated and is not an Administrator
-	if input.RoleID != nil || input.IsActive != nil || input.IsActivated != nil {
+	// Check if user is trying to update role_id/is_active and is not an Administrator
+	if input.RoleID != nil || input.IsActive != nil {
 		// Get the current user's role
 		currentUserRole, err := a.models.Roles.Get(currentUser.RoleID)
 		if err != nil {
@@ -394,9 +391,7 @@ func (a *app) updateUserHandler(w http.ResponseWriter, r *http.Request) {
 			if input.IsActive != nil {
 				v.AddError("is_active", "only administrators can change user activation status")
 			}
-			if input.IsActivated != nil {
-				v.AddError("is_activated", "only administrators can change activation status")
-			}
+			// only administrators can change activation status
 			a.failedValidationResponse(w, r, v.Errors)
 			return
 		}
@@ -414,9 +409,6 @@ func (a *app) updateUserHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	if input.IsActive != nil {
 		user.IsActive = *input.IsActive
-	}
-	if input.IsActivated != nil {
-		user.IsActivated = *input.IsActivated
 	}
 
 	// Update password if provided

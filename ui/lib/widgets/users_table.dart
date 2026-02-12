@@ -99,8 +99,8 @@ class UsersTable extends StatelessWidget {
               ],
             ),
             trailing: Icon(
-              user.isActivated ? Icons.check_circle : Icons.pending,
-              color: user.isActivated ? Colors.green : Colors.orange,
+              user.isActive ? Icons.check_circle : Icons.pending,
+              color: user.isActive ? Colors.green : Colors.orange,
               size: 20,
             ),
           ),

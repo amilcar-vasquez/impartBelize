@@ -13,8 +13,8 @@ import (
 // createAuthTokenHandler handles POST /v1/tokens/authentication
 func (a *app) createAuthTokenHandler(w http.ResponseWriter, r *http.Request) {
 	var input struct {
-		Email    string        `json:"email"`
-		Password string        `json:"password"`
+		Email    string `json:"email"`
+		Password string `json:"password"`
 	}
 
 	err := a.readJSON(w, r, &input)
@@ -36,23 +36,23 @@ func (a *app) createAuthTokenHandler(w http.ResponseWriter, r *http.Request) {
 	ttl := 24 * time.Hour
 
 	// Is there an associated user for the provided email?
-    user, err := a.models.Users.GetByEmail(input.Email)
-    if err != nil {
-        switch {
-            case errors.Is(err, data.ErrRecordNotFound):
-                a.invalidCredentialsResponse(w, r)
-            default:
-                a.serverErrorResponse(w, r, err)
-        }
-        return
-    }
+	user, err := a.models.Users.GetByEmail(input.Email)
+	if err != nil {
+		switch {
+		case errors.Is(err, data.ErrRecordNotFound):
+			a.invalidCredentialsResponse(w, r)
+		default:
+			a.serverErrorResponse(w, r, err)
+		}
+		return
+	}
 
 	// The user is found. Does their password match?
 	match, err := user.Password.Matches(input.Password)
-    if err != nil {
-        a.serverErrorResponse(w, r, err)
-        return
-    }
+	if err != nil {
+		a.serverErrorResponse(w, r, err)
+		return
+	}
 
 	// Wrong password
 	if !match {
@@ -60,8 +60,8 @@ func (a *app) createAuthTokenHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Is the user activated?
-	if !user.IsActivated {
+	// Is the user active/activated?
+	if !user.IsActive {
 		a.inactiveAccountResponse(w, r)
 		return
 	}

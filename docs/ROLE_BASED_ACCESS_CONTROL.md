@@ -141,7 +141,7 @@ if user.IsAnonymous() {
 userID := user.ID
 roleID := user.RoleID
 roleName := user.RoleName
-isActivated := user.IsActivated
+isActive := user.IsActive
 ```
 
 ## Error Responses
